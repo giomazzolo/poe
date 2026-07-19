@@ -1,0 +1,22 @@
+{
+  "slayer": "assets/ascendancy-portraits/slayer.png",
+  "gladiator": "assets/ascendancy-portraits/gladiator.png",
+  "champion": "assets/ascendancy-portraits/champion.png",
+  "assassin": "assets/ascendancy-portraits/assassin.png",
+  "saboteur": "assets/ascendancy-portraits/saboteur.png",
+  "trickster": "assets/ascendancy-portraits/trickster.png",
+  "juggernaut": "assets/ascendancy-portraits/juggernaut.png",
+  "berserker": "assets/ascendancy-portraits/berserker.png",
+  "chieftain": "assets/ascendancy-portraits/chieftain.png",
+  "necromancer": "assets/ascendancy-portraits/necromancer.png",
+  "occultist": "assets/ascendancy-portraits/occultist.png",
+  "elementalist": "assets/ascendancy-portraits/elementalist.png",
+  "deadeye": "assets/ascendancy-portraits/deadeye.png",
+  "warden": "assets/ascendancy-portraits/warden.png",
+  "pathfinder": "assets/ascendancy-portraits/pathfinder.png",
+  "inquisitor": "assets/ascendancy-portraits/inquisitor.png",
+  "hierophant": "assets/ascendancy-portraits/hierophant.png",
+  "guardian": "assets/ascendancy-portraits/guardian.png",
+  "ascendant": "assets/ascendancy-portraits/ascendant.png",
+  "reliquarian": "assets/ascendancy-portraits/reliquarian.png"
+}

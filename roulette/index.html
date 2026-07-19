@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Exile Roulette</title>
+    <style>
+      /* Hide until fonts + boot finish — prevents gem/font layout snap. */
+      html:not(.is-ready) body {
+        pointer-events: none;
+      }
+      html:not(.is-ready) body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: 10000;
+        background: #100e0c;
+      }
+    </style>
+    <script>
+      // Run before modules so reload never flashes mid-page scroll.
+      if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+      window.scrollTo(0, 0);
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://web.poecdn.com" crossorigin />
+    <link
+      rel="preload"
+      href="assets/fonts/fontin-smallcaps-webfont.woff"
+      as="font"
+      type="font/woff"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="assets/fonts/fontin-regular-webfont.woff"
+      as="font"
+      type="font/woff"
+      crossorigin
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&display=block"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <div class="atmosphere" aria-hidden="true"></div>
+
+    <main class="app">
+      <header class="brand">
+        <h1 class="brand__title">Exile Roulette</h1>
+        <p class="brand__tagline">
+          Roll ascendancy and skill on their own. Build around whatever fate deals.
+        </p>
+      </header>
+
+      <section class="roll-block" id="ascendancy-section" aria-labelledby="ascendancy-heading">
+        <div class="roll-block__head">
+          <div class="roll-block__heading">
+            <h2 id="ascendancy-heading" class="roll-block__title">Ascendancy</h2>
+            <span class="roll-block__pool-count" id="ascendancy-pool-count" aria-live="polite">0 in pool</span>
+          </div>
+          <button
+            type="button"
+            class="gem-settings__toggle"
+            id="ascendancy-settings-toggle"
+            aria-haspopup="dialog"
+            aria-controls="ascendancy-settings"
+            aria-expanded="false"
+            aria-label="Ascendancy settings"
+          >
+            <svg class="gem-settings__gear" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+              <path
+                fill="currentColor"
+                fill-rule="evenodd"
+                d="M32 11.2 L34.82 2.13 L36.28 11.65 L39.66 12.66 L42.4 13.99 L49.38 7.55 L45.89 16.51 L48.3 19.08 L50.01 21.6 L59.28 19.51 L51.77 25.53 L52.58 28.96 L52.8 32 L61.87 34.82 L52.35 36.28 L51.34 39.66 L50.01 42.4 L56.45 49.38 L47.49 45.89 L44.92 48.3 L42.4 50.01 L44.49 59.28 L38.47 51.77 L35.04 52.58 L32 52.8 L29.18 61.87 L27.72 52.35 L24.34 51.34 L21.6 50.01 L14.62 56.45 L18.11 47.49 L15.7 44.92 L13.99 42.4 L4.72 44.49 L12.23 38.47 L11.42 35.04 L11.2 32 L2.13 29.18 L11.65 27.72 L12.66 24.34 L13.99 21.6 L7.55 14.62 L16.51 18.11 L19.08 15.7 L21.6 13.99 L19.51 4.72 L25.53 12.23 L28.96 11.42 Z M32 20.8 L30.54 20.9 L29.1 21.18 L27.71 21.65 L26.4 22.3 L25.18 23.11 L24.08 24.08 L23.11 25.18 L22.3 26.4 L21.65 27.71 L21.18 29.1 L20.9 30.54 L20.8 32 L20.9 33.46 L21.18 34.9 L21.65 36.29 L22.3 37.6 L23.11 38.82 L24.08 39.92 L25.18 40.89 L26.4 41.7 L27.71 42.35 L29.1 42.82 L30.54 43.1 L32 43.2 L33.46 43.1 L34.9 42.82 L36.29 42.35 L37.6 41.7 L38.82 40.89 L39.92 39.92 L40.89 38.82 L41.7 37.6 L42.35 36.29 L42.82 34.9 L43.1 33.46 L43.2 32 L43.1 30.54 L42.82 29.1 L42.35 27.71 L41.7 26.4 L40.89 25.18 L39.92 24.08 L38.82 23.11 L37.6 22.3 L36.29 21.65 L34.9 21.18 L33.46 20.9 L32 20.8 Z"
+              />
+            </svg>
+          </button>
+        </div>
+
+        <div class="ascendancy-panel">
+          <div class="ascendancy-panel__bar" id="ascendancy-roll-bar">
+            <button type="button" class="btn btn--quest ascendancy-panel__roll" id="roll-ascendancy">
+              Roll Ascendancy
+            </button>
+            <div class="ascendancy-panel__exclude-slot" aria-hidden="true">
+              <button
+                type="button"
+                class="btn btn--quest ascendancy-panel__exclude-roll"
+                id="exclude-and-roll-ascendancy"
+                disabled
+              >
+                Exclude and Roll
+              </button>
+            </div>
+          </div>
+
+          <div class="ascendancy-reel" id="ascendancy-reel" hidden>
+            <div class="ascendancy-reel__viewport">
+              <div class="ascendancy-reel__track" id="ascendancy-reel-track"></div>
+              <div class="ascendancy-reel__pointer" aria-hidden="true">
+                <span class="ascendancy-reel__arrow"></span>
+              </div>
+            </div>
+          </div>
+
+          <article class="ascendancy-card is-waiting" id="ascendancy-card">
+            <img
+              class="ascendancy-card__art is-placeholder"
+              id="ascendancy-portrait-a"
+              alt=""
+              hidden
+            />
+            <img
+              class="ascendancy-card__art"
+              id="ascendancy-portrait-b"
+              alt=""
+              hidden
+            />
+            <div class="ascendancy-card__veil" aria-hidden="true"></div>
+            <div class="ascendancy-card__text">
+              <p class="ascendancy-card__value" id="ascendancy-result"></p>
+              <p class="ascendancy-card__meta" id="ascendancy-meta">Your fate rests in her even hands.</p>
+              <p class="ascendancy-card__flavour" id="ascendancy-flavour" hidden></p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <div class="roll-sep" aria-hidden="true"></div>
+
+      <section class="roll-block" id="skill-section" aria-labelledby="skill-heading">
+        <div class="roll-block__head">
+          <div class="roll-block__heading">
+            <h2 id="skill-heading" class="roll-block__title">Skill</h2>
+            <span class="roll-block__pool-count" id="skill-pool-count" aria-live="polite">0 in pool</span>
+          </div>
+          <button
+            type="button"
+            class="gem-settings__toggle"
+            id="skill-settings-toggle"
+            aria-haspopup="dialog"
+            aria-controls="skill-settings"
+            aria-label="Settings"
+          >
+            <svg class="gem-settings__gear" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+              <path
+                fill="currentColor"
+                fill-rule="evenodd"
+                d="M32 11.2 L34.82 2.13 L36.28 11.65 L39.66 12.66 L42.4 13.99 L49.38 7.55 L45.89 16.51 L48.3 19.08 L50.01 21.6 L59.28 19.51 L51.77 25.53 L52.58 28.96 L52.8 32 L61.87 34.82 L52.35 36.28 L51.34 39.66 L50.01 42.4 L56.45 49.38 L47.49 45.89 L44.92 48.3 L42.4 50.01 L44.49 59.28 L38.47 51.77 L35.04 52.58 L32 52.8 L29.18 61.87 L27.72 52.35 L24.34 51.34 L21.6 50.01 L14.62 56.45 L18.11 47.49 L15.7 44.92 L13.99 42.4 L4.72 44.49 L12.23 38.47 L11.42 35.04 L11.2 32 L2.13 29.18 L11.65 27.72 L12.66 24.34 L13.99 21.6 L7.55 14.62 L16.51 18.11 L19.08 15.7 L21.6 13.99 L19.51 4.72 L25.53 12.23 L28.96 11.42 Z M32 20.8 L30.54 20.9 L29.1 21.18 L27.71 21.65 L26.4 22.3 L25.18 23.11 L24.08 24.08 L23.11 25.18 L22.3 26.4 L21.65 27.71 L21.18 29.1 L20.9 30.54 L20.8 32 L20.9 33.46 L21.18 34.9 L21.65 36.29 L22.3 37.6 L23.11 38.82 L24.08 39.92 L25.18 40.89 L26.4 41.7 L27.71 42.35 L29.1 42.82 L30.54 43.1 L32 43.2 L33.46 43.1 L34.9 42.82 L36.29 42.35 L37.6 41.7 L38.82 40.89 L39.92 39.92 L40.89 38.82 L41.7 37.6 L42.35 36.29 L42.82 34.9 L43.1 33.46 L43.2 32 L43.1 30.54 L42.82 29.1 L42.35 27.71 L41.7 26.4 L40.89 25.18 L39.92 24.08 L38.82 23.11 L37.6 22.3 L36.29 21.65 L34.9 21.18 L33.46 20.9 L32 20.8 Z"
+              />
+            </svg>
+          </button>
+        </div>
+
+        <div class="gem-panel">
+          <div class="gem-panel__bar" id="skill-roll-bar">
+            <button type="button" class="btn btn--currency gem-panel__roll" id="roll-skill">
+              Roll Skill
+            </button>
+            <div class="gem-panel__exclude-slot" aria-hidden="true">
+              <button
+                type="button"
+                class="btn btn--currency gem-panel__exclude-roll"
+                id="exclude-and-roll"
+                disabled
+              >
+                Exclude and Roll
+              </button>
+            </div>
+          </div>
+
+          <div class="skill-reel" id="skill-reel" hidden>
+            <div class="skill-reel__viewport">
+              <div class="skill-reel__track" id="skill-reel-track"></div>
+            </div>
+            <div class="skill-reel__pointer" aria-hidden="true">
+              <span class="skill-reel__arrow"></span>
+            </div>
+          </div>
+
+          <nav class="variants variants--icons is-empty" id="skill-variants" aria-label="Skill versions">
+            <div class="variants__list" id="skill-variants-list" role="tablist"></div>
+          </nav>
+
+          <div class="gem-panel__sep" aria-hidden="true"></div>
+
+          <article class="gem is-waiting" data-reel="skill" id="skill-card" data-color="neutral">
+            <header class="gem__header">
+              <h3 class="gem__name" id="skill-result">Skill Gem</h3>
+            </header>
+            <div class="gem__stage">
+              <div class="gem__placeholder" id="skill-placeholder">
+                <p class="gem__unid-label">Unidentified</p>
+              </div>
+              <div class="gem__body" id="skill-body" hidden>
+                <p class="gem__tags" id="skill-tags"></p>
+                <div class="gem__sep" aria-hidden="true"></div>
+                <div class="gem__props" id="skill-props"></div>
+                <p class="gem__requires" id="skill-requires"></p>
+                <p class="gem__weapons" id="skill-weapons"></p>
+                <div class="gem__sep" aria-hidden="true"></div>
+                <p class="gem__desc" id="skill-desc"></p>
+                <div class="gem__stats" id="skill-stats"></div>
+                <div class="gem__sep gem__sep--quality" aria-hidden="true"></div>
+                <div class="gem__quality" id="skill-quality" hidden>
+                  <p class="gem__quality-title">Additional Effects From Quality:</p>
+                  <div class="gem__stats" id="skill-quality-stats"></div>
+                </div>
+                <div class="gem__icons" id="skill-icons" hidden>
+                  <img class="gem__skill-icon" id="skill-bar-icon" alt="" width="96" height="96" hidden />
+                </div>
+              </div>
+            </div>
+            <div class="gem__foot">
+              <div class="gem__sep gem__sep--foot" aria-hidden="true"></div>
+              <p class="gem__flavor">
+                Place into an item socket of the right colour to gain this skill. Right click to
+                remove from a socket.
+              </p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <dialog class="settings-modal settings-modal--ascendancy" id="ascendancy-settings" aria-labelledby="ascendancy-settings-title">
+        <div class="settings-modal__panel">
+          <header class="settings-modal__head">
+            <h2 class="settings-modal__title" id="ascendancy-settings-title">Ascendancy Pool</h2>
+            <button type="button" class="settings-modal__close" id="ascendancy-settings-close" aria-label="Close settings">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </header>
+
+          <div class="settings-modal__body">
+            <div class="settings-modal__bar" aria-label="Ascendancy pool summary">
+              <p class="settings-modal__included">
+                <span class="settings-modal__stat-num" id="ascendancy-filter-count">0</span>
+                <span class="settings-modal__included-sep" aria-hidden="true">/</span>
+                <span class="settings-modal__stat-total" id="ascendancy-filter-total">0</span>
+                <span class="settings-modal__stat-label">included</span>
+              </p>
+              <div class="settings-modal__bar-actions">
+                <button type="button" class="btn btn--small" id="ascendancy-filter-all">Include all</button>
+                <button type="button" class="btn btn--small" id="ascendancy-filter-none">Include none</button>
+              </div>
+            </div>
+
+            <div class="ascendancy-pool" id="ascendancy-filter">
+              <div class="ascendancy-pool__groups" id="ascendancy-filter-list"></div>
+            </div>
+          </div>
+        </div>
+      </dialog>
+
+      <dialog class="settings-modal" id="skill-settings" aria-labelledby="skill-settings-title">
+        <div class="settings-modal__panel">
+          <header class="settings-modal__head">
+            <h2 class="settings-modal__title" id="skill-settings-title">Skill pool Settings</h2>
+            <button type="button" class="settings-modal__close" id="skill-settings-close" aria-label="Close settings">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </header>
+
+          <div class="settings-modal__body">
+            <div class="settings-modal__counts" aria-label="Skill pool summary">
+              <div class="settings-modal__stat">
+                <span class="settings-modal__stat-num" id="filter-count-normal">0</span>
+                <span class="settings-modal__stat-label">base</span>
+              </div>
+              <div class="settings-modal__stat">
+                <span class="settings-modal__stat-num" id="filter-count-transfigured">0</span>
+                <span class="settings-modal__stat-label">transfigured</span>
+              </div>
+              <div class="settings-modal__stat">
+                <span class="settings-modal__stat-num" id="filter-count-painful">0</span>
+                <span class="settings-modal__stat-label">painful</span>
+              </div>
+            </div>
+
+            <div class="option option--settings">
+              <label class="option__label" for="roll-transfigured">
+                <input type="checkbox" id="roll-transfigured" />
+                <span>Roll transfigured gems as separate skills</span>
+              </label>
+              <button
+                type="button"
+                class="info-tip"
+                id="info-tip-roll-trans"
+                popovertarget="info-roll-transfigured"
+                aria-label="About rolling transfigured gems separately"
+              >
+                <svg class="info-tip__icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                  <circle cx="8" cy="8" r="6.25" fill="none" stroke="currentColor" stroke-width="1.35" />
+                  <circle cx="8" cy="5.1" r="0.95" fill="currentColor" />
+                  <path
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.35"
+                    stroke-linecap="round"
+                    d="M8 7.35v4.1"
+                  />
+                </svg>
+              </button>
+            </div>
+
+            <div class="skill-pool" id="skill-filter">
+              <div class="banned__toolbar banned__toolbar--search">
+                <input
+                  type="search"
+                  class="banned__search"
+                  id="filter-search"
+                  placeholder="Search skills…"
+                  autocomplete="off"
+                  spellcheck="false"
+                />
+              </div>
+
+              <section
+                class="skill-pool__section skill-pool__section--boxed skill-pool__section--collapsible"
+                id="standard-skills-section"
+                aria-labelledby="standard-skills-heading"
+              >
+                <div class="skill-pool__section-head">
+                  <div class="skill-pool__section-title">
+                    <button
+                      type="button"
+                      class="skill-pool__collapse"
+                      id="standard-skills-toggle"
+                      aria-expanded="false"
+                      aria-controls="standard-skills-body"
+                    >
+                      <span class="skill-pool__collapse-arrow" aria-hidden="true"></span>
+                      <h3 class="skill-pool__heading" id="standard-skills-heading">Standard skills</h3>
+                    </button>
+                    <span class="banned__count" id="standard-skills-count">0 included</span>
+                  </div>
+                  <div class="skill-pool__section-actions">
+                    <button type="button" class="btn btn--small" id="filter-all">Include all</button>
+                    <button type="button" class="btn btn--small" id="filter-none">Include none</button>
+                  </div>
+                </div>
+                <div class="banned__body" id="standard-skills-body">
+                  <div class="banned__body-inner">
+                    <div class="banned__list" id="filter-list"></div>
+                  </div>
+                </div>
+              </section>
+
+              <div class="skill-pool__reveal" id="transfigured-filter-shell" aria-hidden="true">
+                <div class="skill-pool__reveal-inner">
+                  <section
+                    class="skill-pool__section skill-pool__section--boxed skill-pool__section--transfigured skill-pool__section--collapsible"
+                    id="transfigured-filter"
+                    aria-labelledby="transfigured-skills-heading"
+                  >
+                    <div class="skill-pool__section-head">
+                      <div class="skill-pool__section-title">
+                        <button
+                          type="button"
+                          class="skill-pool__collapse"
+                          id="transfigured-skills-toggle"
+                          aria-expanded="false"
+                          aria-controls="transfigured-skills-body"
+                        >
+                          <span class="skill-pool__collapse-arrow" aria-hidden="true"></span>
+                          <h3 class="skill-pool__heading" id="transfigured-skills-heading">
+                            Transfigured skills
+                          </h3>
+                        </button>
+                        <span class="banned__count" id="transfigured-count">0 included</span>
+                      </div>
+                      <div class="skill-pool__section-actions">
+                        <button type="button" class="btn btn--small" id="transfigured-all">Include all</button>
+                        <button type="button" class="btn btn--small" id="transfigured-none">Include none</button>
+                      </div>
+                    </div>
+                    <div class="banned__body" id="transfigured-skills-body">
+                      <div class="banned__body-inner">
+                        <div class="banned__list" id="transfigured-list"></div>
+                      </div>
+                    </div>
+                  </section>
+                </div>
+              </div>
+
+              <section
+                class="skill-pool__section skill-pool__section--boxed skill-pool__section--painful skill-pool__section--collapsible"
+                id="painful-skills-section"
+                aria-labelledby="painful-skills-heading"
+              >
+                <div class="skill-pool__section-head">
+                  <div class="skill-pool__section-title">
+                    <button
+                      type="button"
+                      class="skill-pool__collapse"
+                      id="painful-skills-toggle"
+                      aria-expanded="false"
+                      aria-controls="painful-skills-body"
+                    >
+                      <span class="skill-pool__collapse-arrow" aria-hidden="true"></span>
+                      <h3 class="skill-pool__heading" id="painful-skills-heading">
+                        Painful skills
+                        <span class="skill-pool__hint">opt-in</span>
+                      </h3>
+                    </button>
+                    <button
+                      type="button"
+                      class="info-tip"
+                      id="info-tip-painful"
+                      popovertarget="info-painful-skills"
+                      aria-label="About painful skills"
+                    >
+                      <svg class="info-tip__icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                        <circle cx="8" cy="8" r="6.25" fill="none" stroke="currentColor" stroke-width="1.35" />
+                        <circle cx="8" cy="5.1" r="0.95" fill="currentColor" />
+                        <path
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="1.35"
+                          stroke-linecap="round"
+                          d="M8 7.35v4.1"
+                        />
+                      </svg>
+                    </button>
+                    <span class="banned__count" id="banned-count">0 included</span>
+                  </div>
+                  <div class="skill-pool__section-actions">
+                    <button type="button" class="btn btn--small" id="banned-all">Include all</button>
+                    <button type="button" class="btn btn--small" id="banned-none">Include none</button>
+                  </div>
+                </div>
+                <div class="banned__body" id="painful-skills-body">
+                  <div class="banned__body-inner">
+                    <div class="banned__list" id="banned-list"></div>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
+        </div>
+      </dialog>
+
+      <div id="info-roll-transfigured" class="info-tip__panel" popover>
+        <p>
+          When enabled, each transfigured gem is rolled as its own skill in the pool.
+          When disabled, rolling a base skill can reveal its transfigured versions as
+          selectable variants after the reel lands.
+        </p>
+      </div>
+
+      <div id="info-painful-skills" class="info-tip__panel" popover>
+        <p>
+          Painful skills are awkward, meme, or otherwise rough options kept out of the
+          default pool. They are opt-in — include only the ones you are willing to play.
+        </p>
+      </div>
+
+      <p class="status" id="status" hidden></p>
+    </main>
+
+    <script type="module" src="js/app.js"></script>
+  </body>
+</html>

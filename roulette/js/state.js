@@ -1,0 +1,102 @@
+export const ROLL_DURATION_MS = 1400;
+export const ROLL_TICK_MS = 45;
+
+export const state = {
+  ascendancies: [],
+  /** Filtered ascendancy roll list. Sole writer: rebuildAscendancyPool(). */
+  ascendancyPool: [],
+  includedAscendancyIds: new Set(),
+  /** Framed face icons for the reel / filters. */
+  ascendancyIconsById: {},
+  /** Official landscape ascendancy banner — result card background. */
+  ascendancyCirclesById: {},
+  /** Ascendancy flavour lines keyed by id. */
+  ascendancyFlavourById: {},
+  selectedAscendancyId: null,
+  damageSkills: [],
+  bannedSkills: [],
+  allSkills: [],
+  detailsById: {},
+  iconsById: {},
+  transfiguredByBaseId: new Map(),
+  includedBannedIds: new Set(),
+  includedDamageIds: new Set(),
+  /** Selection memory for transfigured gems (kept even when the mode toggle is off). */
+  includedTransfiguredIds: new Set(),
+  /** Flat list of rollable transfigured gems (filter UI + pool). */
+  transfiguredSkills: [],
+  /**
+   * Sole roll pool. Filters rebuild this; reel/roulette only read it.
+   * Never derive a roll list ad hoc from inclusion sets outside rebuildSkillPool().
+   */
+  skills: [],
+  selectedSkillId: null,
+  rolling: {
+    ascendancy: false,
+    skill: false,
+  },
+};
+
+export const els = {
+  ascendancyCard: document.getElementById("ascendancy-card"),
+  ascendancyResult: document.getElementById("ascendancy-result"),
+  ascendancyMeta: document.getElementById("ascendancy-meta"),
+  ascendancyPortrait: document.getElementById("ascendancy-portrait-a"),
+  ascendancyPortraitA: document.getElementById("ascendancy-portrait-a"),
+  ascendancyPortraitB: document.getElementById("ascendancy-portrait-b"),
+  ascendancyFlavour: document.getElementById("ascendancy-flavour"),
+  ascendancyPoolCount: document.getElementById("ascendancy-pool-count"),
+  ascendancyRollBar: document.getElementById("ascendancy-roll-bar"),
+  excludeAndRollAscendancy: document.getElementById("exclude-and-roll-ascendancy"),
+  excludeAndRollAscendancySlot: document.querySelector(".ascendancy-panel__exclude-slot"),
+  ascendancyReel: document.getElementById("ascendancy-reel"),
+  ascendancyReelTrack: document.getElementById("ascendancy-reel-track"),
+  ascendancyFilterList: document.getElementById("ascendancy-filter-list"),
+  skillCard: document.getElementById("skill-card"),
+  skillPlaceholder: document.getElementById("skill-placeholder"),
+  skillBody: document.getElementById("skill-body"),
+  skillIcons: document.getElementById("skill-icons"),
+  skillGemFrame: document.getElementById("skill-gem-frame"),
+  skillGemSparkle: document.getElementById("skill-gem-sparkle"),
+  skillGemInventory: document.getElementById("skill-gem-inventory"),
+  skillGemBase: document.getElementById("skill-gem-base"),
+  skillGemDeco: document.getElementById("skill-gem-deco"),
+  skillBarIcon: document.getElementById("skill-bar-icon"),
+  skillResult: document.getElementById("skill-result"),
+  skillTags: document.getElementById("skill-tags"),
+  skillProps: document.getElementById("skill-props"),
+  skillRequires: document.getElementById("skill-requires"),
+  skillWeapons: document.getElementById("skill-weapons"),
+  skillDesc: document.getElementById("skill-desc"),
+  skillStats: document.getElementById("skill-stats"),
+  skillQuality: document.getElementById("skill-quality"),
+  skillQualityStats: document.getElementById("skill-quality-stats"),
+  rollAscendancy: document.getElementById("roll-ascendancy"),
+  rollSkill: document.getElementById("roll-skill"),
+  excludeAndRoll: document.getElementById("exclude-and-roll"),
+  skillRollBar: document.getElementById("skill-roll-bar"),
+  excludeAndRollSlot: document.querySelector(".gem-panel__exclude-slot"),
+  rollTransfigured: document.getElementById("roll-transfigured"),
+  skillPoolCount: document.getElementById("skill-pool-count"),
+  skillVariants: document.getElementById("skill-variants"),
+  skillVariantsList: document.getElementById("skill-variants-list"),
+  skillReel: document.getElementById("skill-reel"),
+  skillReelTrack: document.getElementById("skill-reel-track"),
+  status: document.getElementById("status"),
+  filterList: document.getElementById("filter-list"),
+  filterCountNormal: document.getElementById("filter-count-normal"),
+  filterCountPainful: document.getElementById("filter-count-painful"),
+  filterCountTransfigured: document.getElementById("filter-count-transfigured"),
+  filterAll: document.getElementById("filter-all"),
+  filterNone: document.getElementById("filter-none"),
+  filterSearch: document.getElementById("filter-search"),
+  bannedList: document.getElementById("banned-list"),
+  bannedCount: document.getElementById("banned-count"),
+  bannedAll: document.getElementById("banned-all"),
+  bannedNone: document.getElementById("banned-none"),
+  transfiguredFilter: document.getElementById("transfigured-filter"),
+  transfiguredList: document.getElementById("transfigured-list"),
+  transfiguredCount: document.getElementById("transfigured-count"),
+  transfiguredAll: document.getElementById("transfigured-all"),
+  transfiguredNone: document.getElementById("transfigured-none"),
+};

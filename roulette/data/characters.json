@@ -1,0 +1,158 @@
+{
+  "meta": {
+    "game": "Path of Exile",
+    "source": "RePoE characters.json + pathofexile.com/ascendancy/classes",
+    "poeVersion": "3.28.0.14.3",
+    "generatedAt": "2026-07-16T14:50:00Z",
+    "notes": [
+      "Base character classes with starting attributes from RePoE.",
+      "Ascendancies reflect the current base game (Warden replaces Raider; Scion has Ascendant and Reliquarian)."
+    ],
+    "counts": {
+      "characters": 7,
+      "ascendancies": 20
+    }
+  },
+  "characters": [
+    {
+      "name": "Marauder",
+      "id": "marauder",
+      "attributes": ["strength"],
+      "baseStats": {
+        "strength": 32,
+        "dexterity": 14,
+        "intelligence": 14,
+        "life": 38,
+        "mana": 34
+      },
+      "ascendancies": [
+        { "name": "Juggernaut", "id": "juggernaut" },
+        { "name": "Berserker", "id": "berserker" },
+        { "name": "Chieftain", "id": "chieftain" }
+      ]
+    },
+    {
+      "name": "Duelist",
+      "id": "duelist",
+      "attributes": ["strength", "dexterity"],
+      "baseStats": {
+        "strength": 23,
+        "dexterity": 23,
+        "intelligence": 14,
+        "life": 38,
+        "mana": 34
+      },
+      "ascendancies": [
+        { "name": "Slayer", "id": "slayer" },
+        { "name": "Gladiator", "id": "gladiator" },
+        { "name": "Champion", "id": "champion" }
+      ]
+    },
+    {
+      "name": "Ranger",
+      "id": "ranger",
+      "attributes": ["dexterity"],
+      "baseStats": {
+        "strength": 14,
+        "dexterity": 32,
+        "intelligence": 14,
+        "life": 38,
+        "mana": 34
+      },
+      "ascendancies": [
+        { "name": "Deadeye", "id": "deadeye" },
+        { "name": "Warden", "id": "warden" },
+        { "name": "Pathfinder", "id": "pathfinder" }
+      ]
+    },
+    {
+      "name": "Shadow",
+      "id": "shadow",
+      "attributes": ["dexterity", "intelligence"],
+      "baseStats": {
+        "strength": 14,
+        "dexterity": 23,
+        "intelligence": 23,
+        "life": 38,
+        "mana": 34
+      },
+      "ascendancies": [
+        { "name": "Assassin", "id": "assassin" },
+        { "name": "Saboteur", "id": "saboteur" },
+        { "name": "Trickster", "id": "trickster" }
+      ]
+    },
+    {
+      "name": "Witch",
+      "id": "witch",
+      "attributes": ["intelligence"],
+      "baseStats": {
+        "strength": 14,
+        "dexterity": 14,
+        "intelligence": 32,
+        "life": 38,
+        "mana": 34
+      },
+      "ascendancies": [
+        { "name": "Necromancer", "id": "necromancer" },
+        { "name": "Occultist", "id": "occultist" },
+        { "name": "Elementalist", "id": "elementalist" }
+      ]
+    },
+    {
+      "name": "Templar",
+      "id": "templar",
+      "attributes": ["strength", "intelligence"],
+      "baseStats": {
+        "strength": 23,
+        "dexterity": 14,
+        "intelligence": 23,
+        "life": 38,
+        "mana": 34
+      },
+      "ascendancies": [
+        { "name": "Inquisitor", "id": "inquisitor" },
+        { "name": "Hierophant", "id": "hierophant" },
+        { "name": "Guardian", "id": "guardian" }
+      ]
+    },
+    {
+      "name": "Scion",
+      "id": "scion",
+      "attributes": ["strength", "dexterity", "intelligence"],
+      "baseStats": {
+        "strength": 20,
+        "dexterity": 20,
+        "intelligence": 20,
+        "life": 38,
+        "mana": 34
+      },
+      "ascendancies": [
+        { "name": "Ascendant", "id": "ascendant" },
+        { "name": "Reliquarian", "id": "reliquarian" }
+      ]
+    }
+  ],
+  "ascendancies": [
+    { "name": "Juggernaut", "id": "juggernaut", "character": "Marauder", "characterId": "marauder" },
+    { "name": "Berserker", "id": "berserker", "character": "Marauder", "characterId": "marauder" },
+    { "name": "Chieftain", "id": "chieftain", "character": "Marauder", "characterId": "marauder" },
+    { "name": "Slayer", "id": "slayer", "character": "Duelist", "characterId": "duelist" },
+    { "name": "Gladiator", "id": "gladiator", "character": "Duelist", "characterId": "duelist" },
+    { "name": "Champion", "id": "champion", "character": "Duelist", "characterId": "duelist" },
+    { "name": "Deadeye", "id": "deadeye", "character": "Ranger", "characterId": "ranger" },
+    { "name": "Warden", "id": "warden", "character": "Ranger", "characterId": "ranger" },
+    { "name": "Pathfinder", "id": "pathfinder", "character": "Ranger", "characterId": "ranger" },
+    { "name": "Assassin", "id": "assassin", "character": "Shadow", "characterId": "shadow" },
+    { "name": "Saboteur", "id": "saboteur", "character": "Shadow", "characterId": "shadow" },
+    { "name": "Trickster", "id": "trickster", "character": "Shadow", "characterId": "shadow" },
+    { "name": "Necromancer", "id": "necromancer", "character": "Witch", "characterId": "witch" },
+    { "name": "Occultist", "id": "occultist", "character": "Witch", "characterId": "witch" },
+    { "name": "Elementalist", "id": "elementalist", "character": "Witch", "characterId": "witch" },
+    { "name": "Inquisitor", "id": "inquisitor", "character": "Templar", "characterId": "templar" },
+    { "name": "Hierophant", "id": "hierophant", "character": "Templar", "characterId": "templar" },
+    { "name": "Guardian", "id": "guardian", "character": "Templar", "characterId": "templar" },
+    { "name": "Ascendant", "id": "ascendant", "character": "Scion", "characterId": "scion" },
+    { "name": "Reliquarian", "id": "reliquarian", "character": "Scion", "characterId": "scion" }
+  ]
+}

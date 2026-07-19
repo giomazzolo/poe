@@ -1,0 +1,21 @@
+# Scratch extracts, screenshots, smoke profiles
+/tmp/
+
+# Unused assets & data leftovers (kept on disk for reference)
+/unused/
+
+# Local lab / tuner / smoke pages (under each tool)
+**/dev/
+
+# Local PoE extract tooling (large binaries)
+/tools/
+
+# Script runtime lock
+/scripts/server.ready
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.swp
+*~

@@ -1,0 +1,2474 @@
+@font-face {
+  font-family: "Fontin SmallCaps";
+  src: url("../assets/fonts/fontin-smallcaps-webfont.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+}
+
+@font-face {
+  font-family: "Fontin";
+  src: url("../assets/fonts/fontin-regular-webfont.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+}
+
+@font-face {
+  font-family: "Fontin";
+  src: url("../assets/fonts/fontin-italic-webfont.woff") format("woff");
+  font-weight: 400;
+  font-style: italic;
+  font-display: block;
+}
+
+:root {
+  --bg-deep: #100e0c;
+  --bone: #e7dcc8;
+  --bone-dim: #a8977d;
+  --gold: #c9a14a;
+  --gold-hot: #e8c56a;
+  --ember: #b54a2a;
+  --ember-glow: rgba(181, 74, 42, 0.35);
+  --currency: #aa9e82;
+  --currency-hot: #cfc3a6;
+  --ascendancy-bronze: #a87345;
+  --ascendancy-bronze-dim: rgba(168, 115, 69, 0.4);
+  --ascendancy-bronze-glow: rgba(168, 115, 69, 0.5);
+  --line: rgba(201, 161, 74, 0.28);
+  --str: #c45c4a;
+  --dex: #5f9e6e;
+  --int: #5b7fb5;
+  --scrollbar-thumb: rgba(201, 161, 74, 0.45);
+  --scrollbar-thumb-hover: rgba(232, 197, 106, 0.55);
+  --scrollbar-track: rgba(16, 14, 12, 0.85);
+  /* PoEDB GemPopup / in-game tooltip tokens (stdtheme --gem-color etc.) */
+  --gem-teal: #3dcec5;
+  --gem-tag: #afad66;
+  --gem-default: #7f7f7f;
+  --gem-normal: #c8c8c8;
+  --gem-value: #ffffff;
+  --gem-magic: #8888ff;
+  --gem-reminder: #7f7f7f;
+  --gem-flavor: #7f7f7f;
+  --gem-border: #1f4f4c;
+  --gem-bg: #000000;
+  --font-display: "Cinzel", serif;
+  --font-body: "Cormorant Garamond", serif;
+  --font-gem: "Fontin SmallCaps", "Fontin", serif;
+  /* Page UI type scale (gem tooltip keeps its own sizes) */
+  --text: 1.2rem;
+  --text-meta: 1.15rem;
+  --label: 0.88rem;
+  --label-sm: 0.82rem;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 18.5px;
+  background: var(--bg-deep);
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+/* Viewport + every overflow scroller (Chrome/Edge/Safari). */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--scrollbar-thumb-hover);
+}
+
+::-webkit-scrollbar-corner {
+  background: var(--scrollbar-track);
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  min-height: 100vh;
+  color: var(--bone);
+  font-family: var(--font-body);
+  font-size: var(--text);
+  background: var(--bg-deep);
+  overflow-x: hidden;
+}
+
+/* Cover the fully-painted page, then lift away — avoids fading/transforming page content (border flicker). */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: var(--bg-deep);
+  pointer-events: none;
+  opacity: 1;
+}
+
+html.is-ready body::before {
+  animation: page-veil-out 0.36s ease-out forwards;
+}
+
+@keyframes page-veil-out {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+.atmosphere {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 90% 60% at 50% -10%, rgba(181, 74, 42, 0.22), transparent 55%),
+    radial-gradient(ellipse 50% 40% at 80% 80%, rgba(201, 161, 74, 0.08), transparent 50%),
+    linear-gradient(180deg, #16120f 0%, var(--bg-deep) 45%, #0a0908 100%);
+}
+
+.atmosphere::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.18;
+  background-image: repeating-linear-gradient(
+    -12deg,
+    transparent 0 2px,
+    rgba(0, 0, 0, 0.15) 2px 3px
+  );
+  mix-blend-mode: multiply;
+  animation: grain-drift 18s linear infinite;
+}
+
+@keyframes grain-drift {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-40px);
+  }
+}
+
+.app {
+  position: relative;
+  z-index: 1;
+  width: min(900px, calc(100% - 2rem));
+  margin: 0 auto;
+  min-height: 100vh;
+  display: grid;
+  align-content: start;
+  gap: 2rem;
+  /* Extra bottom space so filter panels can open without shoving the page edge */
+  padding: 3rem 0 80vh;
+}
+
+.brand {
+  text-align: center;
+}
+
+.brand__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(2.4rem, 7vw, 4rem);
+  font-weight: 700;
+  line-height: 0.95;
+  letter-spacing: 0.04em;
+  color: var(--bone);
+  text-shadow: 0 0 40px var(--ember-glow);
+}
+
+.brand__tagline {
+  margin: 1rem auto 0;
+  max-width: 34ch;
+  font-size: var(--text-meta);
+  font-style: italic;
+  font-weight: 500;
+  line-height: 1.35;
+  color: var(--bone-dim);
+}
+
+.roll-block {
+  display: grid;
+  gap: 0.85rem;
+}
+
+#skill-section,
+#ascendancy-section {
+  scroll-margin-top: 1.25rem;
+}
+
+.roll-block__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.roll-block__heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.55rem 0.85rem;
+  min-width: 0;
+}
+
+.roll-block__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.35rem, 3.2vw, 1.85rem);
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.roll-block__pool-count {
+  font-family: var(--font-body);
+  font-size: var(--text-meta);
+  font-style: italic;
+  letter-spacing: 0.02em;
+  color: var(--bone-dim);
+  font-variant-numeric: tabular-nums;
+}
+
+.roll-sep {
+  width: 100%;
+  height: 1px;
+  margin: 0.35rem 0;
+  border: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(201, 161, 74, 0.15) 12%,
+    rgba(201, 161, 74, 0.55) 50%,
+    rgba(201, 161, 74, 0.15) 88%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+.btn {
+  appearance: none;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--bone);
+  font-family: var(--font-display);
+  font-size: var(--label-sm);
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 0.8rem 1.1rem;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.btn:hover:not(:disabled) {
+  border-color: var(--gold);
+  color: var(--gold-hot);
+  transform: translateY(-1px);
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.btn--primary {
+  background: linear-gradient(180deg, rgba(201, 161, 74, 0.18), rgba(181, 74, 42, 0.12));
+  border-color: rgba(201, 161, 74, 0.55);
+  color: var(--gold-hot);
+}
+
+/* PoE currency-orb title bar (same header art as in-game currency popups). */
+.btn--currency {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-width: 22rem;
+  height: 55px;
+  margin: 0;
+  padding: 0 55px;
+  border: none;
+  border-radius: 0;
+  color: var(--currency);
+  font-family: var(--font-gem);
+  font-size: 1.4rem;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  background-color: #12100c;
+  background-image:
+    url("../assets/poe-tooltip/itemsheadercurrencyleft.webp"),
+    url("../assets/poe-tooltip/itemsheadercurrencyright.webp"),
+    url("../assets/poe-tooltip/itemsheadercurrencymiddle.webp");
+  background-repeat: no-repeat, no-repeat, repeat-x;
+  background-position: left center, right center, center;
+  background-size: 55px 55px, 55px 55px, 63px 55px;
+  text-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.95),
+    0 0 8px rgba(0, 0, 0, 0.55);
+  transition:
+    color 0.2s ease,
+    filter 0.2s ease,
+    transform 0.2s ease;
+}
+
+.btn--currency:hover:not(:disabled) {
+  color: var(--currency-hot);
+  transform: translateY(-1px);
+  filter: brightness(1.12);
+}
+
+.btn--currency:active:not(:disabled) {
+  transform: translateY(1px);
+  filter: brightness(0.96);
+}
+
+.btn--currency:disabled {
+  opacity: 0.4;
+  filter: grayscale(0.3);
+}
+
+/* PoE quest-item title bar (green quest popup headers). */
+.btn--quest {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-width: 22rem;
+  height: 55px;
+  margin: 0;
+  padding: 0 55px;
+  border: none;
+  border-radius: 0;
+  color: #4ae63a;
+  font-family: var(--font-gem);
+  font-size: 1.25rem;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  background-color: #0c120c;
+  background-image:
+    url("../assets/poe-tooltip/itemsheaderquestleft.webp"),
+    url("../assets/poe-tooltip/itemsheaderquestright.webp"),
+    url("../assets/poe-tooltip/itemsheaderquestmiddle.webp");
+  background-repeat: no-repeat, no-repeat, repeat-x;
+  background-position: left center, right center, center;
+  background-size: 55px 55px, 55px 55px, 63px 55px;
+  text-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.95),
+    0 0 8px rgba(0, 0, 0, 0.55);
+  transition:
+    color 0.2s ease,
+    filter 0.2s ease,
+    transform 0.2s ease;
+}
+
+.btn--quest:hover:not(:disabled) {
+  color: #7dff70;
+  transform: translateY(-1px);
+  filter: brightness(1.12);
+}
+
+.btn--quest:active:not(:disabled) {
+  transform: translateY(1px);
+  filter: brightness(0.96);
+}
+
+.btn--quest:disabled {
+  opacity: 0.4;
+  filter: grayscale(0.3);
+}
+
+.btn--small {
+  padding: 0.55rem 0.9rem;
+  font-size: var(--label-sm);
+  letter-spacing: 0.14em;
+}
+
+.ascendancy-panel {
+  position: relative;
+  width: 100%;
+  max-width: 780px;
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.75rem;
+}
+
+.ascendancy-panel__bar {
+  display: flex;
+  align-items: stretch;
+  width: min(100%, 36rem);
+  margin-inline: auto;
+  gap: 0;
+  transition: gap 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ascendancy-panel__bar.is-split {
+  gap: 0.5rem;
+}
+
+.ascendancy-panel__roll {
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  padding-inline: 2.4rem;
+  font-size: 1.15rem;
+  white-space: nowrap;
+  color: var(--currency);
+  transition:
+    color 0.2s ease,
+    filter 0.2s ease,
+    transform 0.2s ease,
+    max-width 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+    font-size 0.55s cubic-bezier(0.16, 1, 0.3, 1),
+    padding 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ascendancy-panel__roll:hover:not(:disabled),
+.ascendancy-panel__exclude-roll:hover:not(:disabled) {
+  color: var(--currency-hot);
+}
+
+.ascendancy-panel__bar.is-split .ascendancy-panel__roll {
+  max-width: calc((100% - 0.5rem) / 2);
+  padding-inline: 1.4rem;
+  font-size: 0.98rem;
+}
+
+.ascendancy-panel__exclude-slot {
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+  max-width: 0;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateX(1.1rem) scale(0.96);
+  transform-origin: left center;
+  pointer-events: none;
+  transition:
+    max-width 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.45s ease 0.14s,
+    transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ascendancy-panel__bar.is-split .ascendancy-panel__exclude-slot {
+  max-width: calc((100% - 0.5rem) / 2);
+  opacity: 1;
+  transform: translateX(0) scale(1);
+  pointer-events: auto;
+}
+
+.ascendancy-panel__exclude-roll {
+  display: inline-flex;
+  width: 100%;
+  min-width: 0;
+  padding-inline: 1.4rem;
+  font-size: 0.98rem;
+  white-space: nowrap;
+  color: var(--currency);
+}
+
+.ascendancy-reel {
+  position: relative;
+  width: 100%;
+  margin: 0;
+}
+
+.ascendancy-reel__viewport {
+  position: relative;
+  height: 128px;
+  overflow: hidden;
+  border: 1px solid var(--ascendancy-bronze-dim);
+  background: #050805;
+  mask-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    #000 10%,
+    #000 90%,
+    transparent 100%
+  );
+}
+
+.ascendancy-reel__track {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  gap: 9px;
+  padding: 0 9px;
+  will-change: transform;
+  transform: translateX(0);
+}
+
+.ascendancy-reel__track.is-spinning {
+  transition: none;
+}
+
+.ascendancy-reel__cell {
+  position: relative;
+  flex: none;
+  width: 131px;
+  height: 95px;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  overflow: visible;
+  transform: scale(1);
+  transition:
+    filter 0.22s ease,
+    transform 0.22s ease;
+}
+
+.ascendancy-reel__cell img {
+  display: block;
+  width: 131px;
+  height: 95px;
+  object-fit: contain;
+  object-position: center center;
+  pointer-events: none;
+  image-rendering: auto;
+  opacity: 1;
+  transition: opacity 0.2s ease;
+}
+
+.ascendancy-reel__cell.is-winner {
+  filter: drop-shadow(0 0 10px var(--ascendancy-bronze-glow));
+  transform: scale(1.12);
+  z-index: 1;
+}
+
+/* Empty gap: cell keeps its slot; art fades out until scrolled away. */
+.ascendancy-reel__cell.is-departing {
+  filter: none;
+  transform: scale(1);
+  pointer-events: none;
+}
+
+.ascendancy-reel__cell.is-departing img {
+  opacity: 0;
+}
+
+.ascendancy-reel__pointer {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  pointer-events: none;
+  filter: drop-shadow(0 0 6px var(--ascendancy-bronze-glow));
+}
+
+.ascendancy-reel__arrow {
+  display: block;
+  width: 0;
+  height: 0;
+  border-left: 11px solid transparent;
+  border-right: 11px solid transparent;
+  border-top: 16px solid var(--ascendancy-bronze);
+}
+
+.ascendancy-card {
+  position: relative;
+  display: block;
+  width: 100%;
+  /* Match official promo banners (530×245) exactly — no padding on this box. */
+  aspect-ratio: 530 / 245;
+  min-height: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  overflow: hidden;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.55);
+  /* Keeps dual-layer opacity crossfade from going muddy mid-blend. */
+  isolation: isolate;
+}
+
+.ascendancy-card__art {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 100%;
+  height: 100%;
+  display: block;
+  margin: 0;
+  border: none;
+  border-radius: 0;
+  object-fit: fill;
+  object-position: center center;
+  transform-origin: center center;
+  /* Tuned in dev/banner-tuner.html — keep in sync with that page. */
+  --art-x: 0%;
+  --art-y: 3.2%;
+  --art-scale: 1.143;
+  transform: translate(calc(-50% + var(--art-x)), calc(-50% + var(--art-y)))
+    scale(var(--art-scale));
+  opacity: 1;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* PoELab page background — waiting / rolling placeholder (dev/lab-bg-tuner.html). */
+.ascendancy-card__art.is-placeholder {
+  object-fit: contain;
+  object-position: center top;
+  --art-x: -35.1%;
+  --art-y: 67.8%;
+  --art-scale: 2.4;
+}
+
+.ascendancy-card__art.is-fade-out {
+  animation: ascendancy-crossfade-out 0.22s ease both;
+}
+
+.ascendancy-card__art.is-fade-in {
+  animation: ascendancy-crossfade-in 0.22s ease both;
+}
+
+@keyframes ascendancy-crossfade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes ascendancy-crossfade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.ascendancy-card__text {
+  position: absolute;
+  z-index: 3;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+  padding: 0.85rem 1.25rem 1rem;
+  pointer-events: none;
+  opacity: 1;
+}
+
+.ascendancy-card__text.is-fade-out {
+  animation: ascendancy-crossfade-out 0.22s ease both;
+}
+
+.ascendancy-card__text.is-fade-in {
+  animation: ascendancy-crossfade-in 0.22s ease both;
+}
+
+/* Same one-shot reflection as .gem__header.is-shining — after a result lands. */
+.ascendancy-card.is-shining::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 2;
+  width: 52%;
+  background: linear-gradient(
+    100deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.12) 28%,
+    rgba(210, 255, 250, 0.55) 44%,
+    rgba(255, 255, 255, 0.95) 50%,
+    rgba(210, 255, 250, 0.55) 56%,
+    rgba(255, 255, 255, 0.12) 72%,
+    transparent 100%
+  );
+  transform: translateX(-140%) skewX(-16deg);
+  animation: gem-header-shine 0.95s ease-in-out forwards;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
+.ascendancy-card__veil {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(5, 8, 5, 0.82) 0%,
+      rgba(5, 8, 5, 0.45) 45.6%,
+      rgba(5, 8, 5, 0.12) 84%,
+      rgba(5, 8, 5, 0.28) 100%
+    );
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.ascendancy-card.has-result .ascendancy-card__veil,
+.ascendancy-card.is-rolling .ascendancy-card__veil,
+.ascendancy-card.is-waiting .ascendancy-card__veil {
+  opacity: 1;
+}
+
+.ascendancy-card.is-waiting {
+  background: transparent;
+  overflow: hidden;
+}
+
+.ascendancy-card__label {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--label);
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: #4ae63a;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.85);
+}
+
+.ascendancy-card__value {
+  margin: 0;
+  min-height: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.55rem, 3.6vw, 2rem);
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--bone);
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.9);
+}
+
+.ascendancy-card__value.is-spinning {
+  color: var(--bone-dim);
+  filter: blur(0.4px);
+}
+
+.ascendancy-card__meta {
+  margin: 0.28rem 0 0;
+  font-size: var(--text-meta);
+  color: var(--bone-dim);
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.85);
+}
+
+.ascendancy-card.is-waiting .ascendancy-card__meta,
+.ascendancy-card.is-rolling .ascendancy-card__meta {
+  margin-top: auto;
+}
+
+.ascendancy-card__flavour {
+  margin: auto 0 0;
+  max-width: 28.8rem;
+  font-family: "Fontin", serif;
+  font-size: clamp(0.88rem, 1.65vw, 1.05rem);
+  font-style: italic;
+  line-height: 1.4;
+  letter-spacing: 0;
+  text-transform: none;
+  white-space: pre-line;
+  color: #a8a8a8;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.9);
+}
+
+.ascendancy-card__flavour[hidden] {
+  display: none;
+}
+
+.ascendancy-pool__groups {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.55rem 0.75rem;
+}
+
+.ascendancy-pool__group {
+  border: 1px solid var(--line);
+  background: rgba(16, 14, 12, 0.55);
+  padding: 0.55rem 0.75rem 0.65rem;
+  min-width: 0;
+}
+
+.ascendancy-pool__group-title {
+  margin: 0 0 0.45rem;
+  font-family: var(--font-display);
+  font-size: var(--label-sm);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.ascendancy-pool__rows {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 0.35rem 0.5rem;
+  overflow-x: auto;
+}
+
+.ascendancy-pool__row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  flex: 0 1 auto;
+  min-width: 88px;
+  width: max-content;
+  max-width: 100%;
+  padding: 0.2rem 0.15rem;
+  font-size: 0.88rem;
+  line-height: 1.15;
+  color: var(--bone-dim);
+  cursor: pointer;
+}
+
+.ascendancy-pool__row:has(input:checked) {
+  color: var(--bone);
+}
+
+.ascendancy-pool__thumb {
+  display: block;
+  width: 88px;
+  height: 64px;
+  border-radius: 0;
+  border: none;
+  background: transparent;
+  object-fit: contain;
+  object-position: center center;
+  flex: none;
+}
+
+.ascendancy-pool__caption {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.28rem;
+  width: max-content;
+  max-width: 100%;
+  min-width: 88px;
+}
+
+.ascendancy-pool__caption input {
+  flex: none;
+  margin: 0;
+  accent-color: var(--ascendancy-bronze);
+}
+
+.ascendancy-pool__name {
+  flex: none;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* In-game PoE skill gem tooltip (Fontin + PoB header assets) */
+.gem {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  max-width: 780px;
+  margin-inline: auto;
+  border: 1px solid #1e5252;
+  background: #000;
+  color: var(--gem-default);
+  box-shadow:
+    inset 0 0 0 1px rgba(27, 162, 155, 0.12),
+    0 10px 28px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+
+.gem.is-morphing {
+  transition: height 0.38s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Middle crossfades; header stays top, foot stays at the end of the flex column. */
+.gem__stage {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden; /* always — not toggled with morph, so spacing can’t pop at the end */
+}
+
+.gem__foot {
+  flex: 0 0 auto;
+  margin-top: auto;
+  /* Gap above the sep must be padding — margin collapses with the stage and twitches. */
+  padding-top: 0.55rem;
+}
+
+.gem__placeholder,
+.gem__body {
+  transition: opacity 0.14s ease;
+}
+
+.gem__placeholder {
+  margin: 0;
+  padding: 0.15rem 0 0;
+  font-family: var(--font-gem);
+  text-align: center;
+}
+
+.gem__unid-label {
+  margin: 0.45rem 0.85rem 0;
+  font-family: var(--font-gem);
+  font-size: 1.25rem;
+  line-height: 1.3;
+  color: #ff0000;
+}
+
+.gem__body {
+  padding: 0;
+  font-family: var(--font-gem);
+  text-align: center;
+  text-transform: none;
+  letter-spacing: 0.01em;
+}
+
+.gem__sep--foot {
+  margin-top: 0;
+}
+
+.gem__foot .gem__flavor {
+  padding-bottom: 0.55rem;
+  text-align: center;
+}
+
+.gem__icons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
+  margin: 0.65rem 0 0;
+  padding: 0 1rem;
+}
+
+/*
+ * Official gem PNGs are 234×78 sheets: [decoration 78][empty 78][gem 78].
+ * Transfigured: crystal cell is HSV-shaded in JS (PShad_AlternateSkillGemEffect).
+ * Trarthus: base sheet + SparkleBackground underlay.
+ */
+.gem__art-frame {
+  position: relative;
+  width: 96px;
+  height: 96px;
+  overflow: hidden;
+  flex: none;
+  background: #000;
+  border: 1px solid rgba(27, 162, 155, 0.35);
+}
+
+/* Hidden until content-aware sheet align is applied (avoids a visible jump). */
+.gem__art-frame.is-aligning {
+  opacity: 0;
+}
+
+/* TrarthanGem underlay — Art/2DItems/Gems/Overlays/SparkleBackground.dds */
+.gem__sparkle {
+  position: absolute;
+  inset: 0;
+  background: url("../assets/icons/gems/overlays/sparklebackground.png") center / contain no-repeat;
+  pointer-events: none;
+  z-index: 0;
+  mix-blend-mode: screen;
+  transform: translate(var(--gem-align-x, 0%), var(--gem-align-y, 0%));
+}
+
+/* Pre-composited inventory icon (78×78), when no sheet/shade path applies. */
+.gem__inventory {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  image-rendering: auto;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.gem__art {
+  position: absolute;
+  inset: 0;
+  background-image: var(--gem-sheet);
+  background-repeat: no-repeat;
+  background-size: 300% 100%;
+  pointer-events: none;
+  /* Content-aware center: deco+crystal silhouette (set by gem-art.js) */
+  transform: translate(var(--gem-align-x, 0%), var(--gem-align-y, 0%));
+}
+
+/* Right cell — attribute-coloured gem crystal (or shaded data-URL) */
+.gem__art--base {
+  background-position: 100% 0;
+  z-index: 1;
+}
+
+.gem__art--base.is-shaded {
+  background-size: 100% 100%;
+  background-position: 0 0;
+}
+
+/* Left cell — skill-unique decoration, drawn above the gem */
+.gem__art--deco {
+  background-position: 0 0;
+  z-index: 2;
+}
+
+.gem__skill-icon {
+  width: 96px;
+  height: 96px;
+  flex: none;
+  object-fit: contain;
+  image-rendering: auto;
+  background: #000;
+  border: 1px solid rgba(27, 162, 155, 0.35);
+}
+
+.gem__header {
+  position: relative;
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 100%;
+  height: 55px;
+  margin: 0;
+  padding: 0 55px;
+  overflow: hidden;
+  background-color: #071412;
+  background-image:
+    url("../assets/poe-tooltip/itemsheadergemleft.png"),
+    url("../assets/poe-tooltip/itemsheadergemright.png"),
+    url("../assets/poe-tooltip/itemsheadergemmiddle.png");
+  background-repeat: no-repeat, no-repeat, repeat-x;
+  background-position: left center, right center, center;
+  background-size: 55px 55px, 55px 55px, 63px 55px;
+}
+
+/* One-shot reflection — triggered after the tooltip finishes morphing in. */
+.gem__header.is-shining::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+  width: 52%;
+  background: linear-gradient(
+    100deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.12) 28%,
+    rgba(210, 255, 250, 0.55) 44%,
+    rgba(255, 255, 255, 0.95) 50%,
+    rgba(210, 255, 250, 0.55) 56%,
+    rgba(255, 255, 255, 0.12) 72%,
+    transparent 100%
+  );
+  transform: translateX(-140%) skewX(-16deg);
+  animation: gem-header-shine 0.95s ease-in-out forwards;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
+@keyframes gem-header-shine {
+  to {
+    transform: translateX(320%) skewX(-16deg);
+  }
+}
+
+.gem__name {
+  position: relative;
+  z-index: 2;
+  margin: 0;
+  max-width: 100%;
+  font-family: var(--font-gem);
+  font-size: 1.45rem;
+  font-weight: 400;
+  line-height: 1.05;
+  color: var(--gem-teal);
+  text-transform: none;
+  text-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.9),
+    0 0 8px rgba(0, 0, 0, 0.55);
+}
+
+.gem__name.is-spinning {
+  color: #1a8f88;
+  filter: blur(0.4px);
+}
+
+.gem__tags {
+  margin: 0.45rem 0.85rem 0.15rem;
+  color: var(--gem-tag);
+  font-family: var(--font-gem);
+  font-size: 1.02rem;
+  line-height: 1.2;
+}
+
+.gem__props,
+.gem__requires,
+.gem__weapons,
+.gem__desc,
+.gem__stats,
+.gem__quality,
+.gem__flavor {
+  margin: 0;
+  padding: 0 1rem;
+  font-size: 1.02rem;
+  line-height: 1.22;
+}
+
+.gem__props {
+  display: grid;
+  gap: 0;
+  margin-bottom: 0.12rem;
+  color: var(--gem-default);
+}
+
+.gem__props p,
+.gem__stats p {
+  margin: 0;
+}
+
+.gem__label {
+  color: var(--gem-default);
+}
+
+.gem__value {
+  color: var(--gem-value);
+}
+
+.gem__requires {
+  margin-bottom: 0.05rem;
+  color: var(--gem-default);
+}
+
+.gem__weapons {
+  margin-bottom: 0.08rem;
+  color: var(--gem-default);
+}
+
+.gem__sep {
+  height: 10px;
+  margin: 0.12rem 0.6rem;
+  background: url("../assets/poe-tooltip/itemsseparatorgem.png") center / 100% 100% no-repeat;
+  opacity: 0.85;
+}
+
+.gem__desc {
+  margin: 0.05rem 0 0.18rem;
+  color: var(--gem-teal);
+}
+
+.gem__stats {
+  display: grid;
+  gap: 0;
+}
+
+.gem__stat {
+  margin: 0;
+  padding: 0.1rem 0.85rem;
+  color: var(--gem-magic);
+  font-family: var(--font-gem);
+  font-size: 1.02rem;
+  line-height: 1.3;
+  text-transform: none;
+}
+
+.gem__stats > .gem__stat:nth-child(even) {
+  background-image: linear-gradient(
+    90deg,
+    hsla(0, 0%, 100%, 0),
+    hsla(0, 0%, 100%, 0.125),
+    hsla(0, 0%, 100%, 0)
+  );
+}
+
+.gem__stat-num {
+  color: var(--gem-value);
+}
+
+.gem__stat--reminder {
+  color: var(--gem-reminder);
+  font-family: "Fontin", serif;
+  font-size: 0.9rem;
+  font-style: italic;
+  line-height: 1.25;
+  text-transform: none;
+  background: transparent !important;
+  background-image: none !important;
+}
+
+.gem__stat--quality {
+  color: var(--gem-magic);
+}
+
+.gem__quality-title {
+  margin: 0 0 0.1rem;
+  padding: 0 1rem;
+  color: var(--gem-value);
+  font-family: var(--font-gem);
+  font-size: 1.02rem;
+  text-transform: none;
+}
+
+.gem__quality {
+  margin-top: 0.28rem;
+}
+
+.gem__flavor {
+  margin-top: 0.08rem;
+  font-family: "Fontin", serif;
+  font-size: 0.92rem;
+  font-style: italic;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--gem-flavor);
+  line-height: 1.3;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin: 0.15rem 0 0;
+  font-size: var(--text);
+  color: var(--bone-dim);
+  cursor: pointer;
+}
+
+.option input {
+  accent-color: var(--gold);
+}
+
+.option:has(input:checked) {
+  color: var(--bone);
+}
+
+.gem-panel {
+  position: relative;
+  max-width: 780px;
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.55rem;
+}
+
+.gem-panel__bar {
+  display: flex;
+  align-items: stretch;
+  width: min(100%, 36rem);
+  margin-inline: auto;
+  gap: 0;
+  transition: gap 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.gem-panel__bar.is-split {
+  gap: 0.5rem;
+}
+
+.gem-panel__roll {
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  padding-inline: 2.4rem;
+  font-size: 1.25rem;
+  white-space: nowrap;
+  transition:
+    color 0.2s ease,
+    filter 0.2s ease,
+    transform 0.2s ease,
+    max-width 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+    font-size 0.55s cubic-bezier(0.16, 1, 0.3, 1),
+    padding 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.gem-panel__bar.is-split .gem-panel__roll {
+  max-width: calc((100% - 0.5rem) / 2);
+  padding-inline: 1.5rem;
+  font-size: 1.05rem;
+}
+
+.gem-panel__exclude-slot {
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+  max-width: 0;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateX(1.1rem) scale(0.96);
+  transform-origin: left center;
+  pointer-events: none;
+  transition:
+    max-width 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.45s ease 0.14s,
+    transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.gem-panel__bar.is-split .gem-panel__exclude-slot {
+  max-width: calc((100% - 0.5rem) / 2);
+  opacity: 1;
+  transform: translateX(0) scale(1);
+  pointer-events: auto;
+}
+
+.gem-panel__exclude-roll {
+  display: inline-flex;
+  width: 100%;
+  min-width: 0;
+  padding-inline: 1.5rem;
+  font-size: 1.05rem;
+  white-space: nowrap;
+  transition:
+    color 0.2s ease,
+    filter 0.2s ease,
+    transform 0.2s ease;
+}
+
+.gem-settings__toggle {
+  appearance: none;
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 2.5rem;
+  height: 2.5rem;
+  margin: 0;
+  padding: 0;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--gold);
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.gem-settings__toggle:hover {
+  color: var(--gold-hot);
+  border-color: var(--line);
+  background: rgba(201, 161, 74, 0.08);
+}
+
+.gem-settings__toggle:active {
+  transform: scale(0.96);
+}
+
+.gem-settings__toggle:focus-visible {
+  outline: 2px solid rgba(61, 206, 197, 0.75);
+  outline-offset: 3px;
+}
+
+.gem-settings__gear {
+  width: 1.55rem;
+  height: 1.55rem;
+  display: block;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.gem-settings__toggle:hover .gem-settings__gear {
+  transform: rotate(60deg);
+}
+
+.settings-modal {
+  width: min(980px, calc(100vw - 1.25rem));
+  max-height: min(94vh, 1200px);
+  margin: auto;
+  padding: 0;
+  border: 1px solid rgba(201, 161, 74, 0.45);
+  background: #140f0c;
+  color: var(--bone);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.65);
+  overflow: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+.settings-modal::backdrop {
+  background: rgba(6, 4, 3, 0.72);
+  backdrop-filter: blur(2px);
+}
+
+.settings-modal__panel {
+  display: flex;
+  flex-direction: column;
+  max-height: min(94vh, 1200px);
+  overflow: hidden;
+}
+
+.settings-modal__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex: none;
+  padding: 0.95rem 1.1rem;
+  border-bottom: 1px solid var(--line);
+  background: linear-gradient(180deg, rgba(201, 161, 74, 0.12), transparent);
+}
+
+.settings-modal__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--label);
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.settings-modal__close {
+  appearance: none;
+  display: grid;
+  place-items: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  margin: 0;
+  padding: 0;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--bone-dim);
+  font-size: 1.6rem;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.settings-modal__close:hover {
+  color: var(--gold-hot);
+  border-color: var(--line);
+}
+
+.settings-modal__close:focus-visible {
+  outline: 2px solid rgba(61, 206, 197, 0.75);
+  outline-offset: 2px;
+}
+
+.settings-modal__body {
+  overflow: auto;
+  padding: 1.15rem 1.25rem 1.4rem;
+  display: grid;
+  gap: 0.95rem;
+  scrollbar-gutter: stable;
+}
+
+.settings-modal__counts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.35rem;
+  margin: 0.15rem 0 0.35rem;
+  padding: 0.85rem 0.5rem;
+  border-bottom: 1px solid var(--line);
+  background: linear-gradient(
+    180deg,
+    rgba(201, 161, 74, 0.08),
+    transparent 70%
+  );
+}
+
+/* Compact single-count strip (Ascendancy pool — not a 3-stat grid). */
+.settings-modal__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.65rem 1rem;
+  margin: 0;
+  padding: 0.55rem 0.15rem 0.75rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.settings-modal__included {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem 0.45rem;
+  margin: 0;
+  min-width: 0;
+}
+
+.settings-modal__included-sep {
+  font-family: var(--font-display);
+  font-size: clamp(1.1rem, 2.4vw, 1.35rem);
+  font-weight: 500;
+  color: var(--bone-dim);
+}
+
+.settings-modal__stat-total {
+  font-family: var(--font-display);
+  font-size: clamp(1.1rem, 2.4vw, 1.35rem);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  color: var(--bone-dim);
+  font-variant-numeric: tabular-nums;
+}
+
+.settings-modal__bar .settings-modal__stat-num {
+  font-size: clamp(1.35rem, 2.8vw, 1.7rem);
+}
+
+.settings-modal__bar .settings-modal__stat-label {
+  margin-left: 0.15rem;
+}
+
+.settings-modal__bar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.settings-modal--ascendancy {
+  width: min(760px, calc(100vw - 1.25rem));
+}
+
+.settings-modal--ascendancy .settings-modal__body {
+  gap: 0.75rem;
+}
+
+.settings-modal__stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2rem;
+  text-align: center;
+  min-width: 0;
+}
+
+.settings-modal__stat + .settings-modal__stat {
+  border-left: 1px solid rgba(201, 161, 74, 0.22);
+}
+
+.settings-modal__stat-num {
+  font-family: var(--font-display);
+  font-size: clamp(1.45rem, 3vw, 1.85rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  color: var(--gold-hot);
+  font-variant-numeric: tabular-nums;
+}
+
+.settings-modal__stat-label {
+  font-family: var(--font-display);
+  font-size: var(--label-sm);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--bone-dim);
+}
+
+.settings-modal .banned__list {
+  max-height: min(42vh, 28rem);
+}
+
+.option--settings {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 0;
+}
+
+.option--settings .option__label {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin: 0;
+  min-width: 0;
+  flex: 1;
+  cursor: pointer;
+}
+
+.info-tip {
+  appearance: none;
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--gold);
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.info-tip:hover,
+.info-tip:focus-visible {
+  color: var(--gold-hot);
+}
+
+.info-tip:focus-visible {
+  outline: 2px solid rgba(61, 206, 197, 0.75);
+  outline-offset: 2px;
+}
+
+.info-tip__icon {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.info-tip__panel {
+  margin: 0;
+  inset: unset;
+  position: fixed;
+  z-index: 80;
+  box-sizing: border-box;
+  width: min(22rem, calc(100vw - 1.5rem));
+  padding: 0.85rem 1rem;
+  border: 1px solid rgba(201, 161, 74, 0.45);
+  background: #1a1510;
+  color: var(--bone-dim);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55);
+}
+
+.info-tip__panel p {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: var(--text-meta);
+  font-style: italic;
+  line-height: 1.4;
+}
+
+.gem-panel__sep {
+  width: 100%;
+  height: 12px;
+  /* Pull up against the panel flex gap so only this divider sits tighter to the gems. */
+  margin: -0.35rem 0 0.05rem;
+  background: url("../assets/poe-tooltip/itemsseparatorgem.png") center / 100% 100% no-repeat;
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+.gem-panel .gem {
+  width: 100%;
+  max-width: none;
+  margin-inline: 0;
+}
+
+.skill-reel {
+  position: relative;
+  width: 100%;
+  margin: 0;
+}
+
+.skill-reel__viewport {
+  position: relative;
+  height: 108px;
+  overflow: hidden;
+  border: 1px solid #1e5252;
+  background: #000;
+  mask-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    #000 10%,
+    #000 90%,
+    transparent 100%
+  );
+}
+
+.skill-reel__track {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  gap: 6px;
+  padding: 0 6px;
+  will-change: transform;
+  transform: translateX(0);
+}
+
+.skill-reel__track.is-spinning {
+  /* Motion is rAF-driven; keep CSS from fighting the transform. */
+  transition: none;
+}
+
+.skill-reel__track.is-spinning .skill-reel__cell {
+  transition: none;
+}
+
+.skill-reel__cell {
+  position: relative;
+  flex: none;
+  width: 92px;
+  height: 92px;
+  border: 1px solid #2c2c2c;
+  background: #050505;
+  transition:
+    border-color 0.35s ease,
+    box-shadow 0.35s ease,
+    transform 0.35s ease;
+}
+
+.skill-reel__cell.is-winner {
+  border-color: var(--gem-teal);
+  box-shadow: 0 0 14px rgba(61, 206, 197, 0.45);
+  transform: scale(1.06);
+  z-index: 1;
+}
+
+.skill-reel__cell .gem__art-frame {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.skill-reel__pointer {
+  /* Outside the viewport so it can stack above descending flyers. */
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  pointer-events: none;
+  filter: drop-shadow(0 0 6px rgba(61, 206, 197, 0.55));
+}
+
+.skill-reel__arrow {
+  display: block;
+  width: 0;
+  height: 0;
+  border-left: 11px solid transparent;
+  border-right: 11px solid transparent;
+  border-top: 16px solid var(--gem-teal);
+}
+
+.variants {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  display: grid;
+  grid-template-rows: 0fr;
+  transition:
+    grid-template-rows 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    padding 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.variants.is-open {
+  grid-template-rows: 1fr;
+  padding: 0.25rem 0 0.35rem;
+}
+
+.variants__list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.variants__btn {
+  appearance: none;
+  position: relative;
+  box-sizing: border-box;
+  flex: none;
+  width: 92px;
+  height: 92px;
+  padding: 0;
+  border: 1px solid #2c2c2c;
+  background: #050505;
+  cursor: pointer;
+  line-height: 0;
+  overflow: visible;
+  opacity: 0.62;
+  filter: saturate(0.85);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    opacity 0.2s ease,
+    filter 0.2s ease;
+}
+
+.variants__btn:hover {
+  opacity: 1;
+  filter: none;
+  border-color: rgba(61, 206, 197, 0.55);
+  z-index: 1;
+}
+
+.variants__btn:focus-visible {
+  outline: 2px solid rgba(61, 206, 197, 0.75);
+  outline-offset: 3px;
+  opacity: 1;
+  filter: none;
+}
+
+.variants__btn.is-active {
+  opacity: 1;
+  filter: none;
+  border-color: var(--gem-teal);
+  box-shadow: 0 0 12px rgba(61, 206, 197, 0.4);
+  z-index: 2;
+}
+
+.variants__btn.is-arriving {
+  opacity: 0;
+  filter: none;
+  pointer-events: none;
+  box-shadow: none;
+  border-color: transparent;
+  background: transparent;
+}
+
+.variants.is-reserved .variants__btn.is-arriving,
+.variants.is-reserved .variants__btn.is-arriving.is-active {
+  /* Keep layout size while gems fly in — stay fully hidden, no partial active peek. */
+  visibility: hidden;
+  opacity: 0 !important;
+  box-shadow: none !important;
+  border-color: transparent !important;
+  filter: none !important;
+  transition: none !important;
+}
+
+.variants__btn.is-fading-out {
+  opacity: 0 !important;
+  filter: none;
+  pointer-events: none;
+  box-shadow: none;
+  transition: opacity 0.28s ease;
+}
+
+.variants.is-fading-out {
+  pointer-events: none;
+}
+
+.variants__gem.gem__art-frame {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: #000;
+  /* Avoid clipping gem + decoration inside the fixed tile. */
+  overflow: visible;
+}
+
+.skill-reel__cell.is-departing {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+  transform: none;
+  pointer-events: none;
+}
+
+.skill-reel__cell.is-departing > * {
+  visibility: hidden;
+}
+
+.variant-flyer {
+  /* Absolute inside .gem-panel so flyers track scroll / layout with the page. */
+  position: absolute;
+  z-index: 40;
+  box-sizing: border-box;
+  width: 92px;
+  height: 92px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid #2c2c2c;
+  background: #050505;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0;
+  will-change: transform;
+}
+
+.variant-flyer.is-visible {
+  opacity: 1;
+  filter: none;
+}
+
+/* Match inactive / active variant buttons so the handoff has no color pop. */
+.variant-flyer.is-visible.is-dimmed {
+  opacity: 0.62;
+  filter: saturate(0.85);
+}
+
+.variant-flyer.is-visible.is-selected {
+  opacity: 1;
+  filter: none;
+  border-color: var(--gem-teal);
+  box-shadow: 0 0 12px rgba(61, 206, 197, 0.4);
+}
+
+.variant-flyer .gem__art-frame,
+.variant-flyer .variants__gem {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.banned {
+  border: 1px solid var(--line);
+  background: rgba(16, 14, 12, 0.72);
+}
+
+.banned__summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.95rem 1.15rem;
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-size: var(--label);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold);
+  list-style: none;
+}
+
+.banned__summary::-webkit-details-marker {
+  display: none;
+}
+
+.banned__summary:hover {
+  color: var(--gold-hot);
+}
+
+.banned__summary-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-width: 0;
+}
+
+.banned__summary-arrow {
+  width: 0.45rem;
+  height: 0.45rem;
+  flex: none;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  color: var(--gold);
+  transform: rotate(-45deg);
+  transition: transform 0.2s ease;
+}
+
+.banned.is-open > .banned__summary .banned__summary-arrow {
+  transform: rotate(45deg);
+}
+
+.banned__summary:hover .banned__summary-arrow {
+  color: var(--gold-hot);
+}
+
+.banned__count {
+  font-family: var(--font-body);
+  font-size: var(--text-meta);
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--bone-dim);
+}
+
+.banned__summary-counts {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: baseline;
+  gap: 0.35rem 0.85rem;
+  text-align: right;
+}
+
+.banned__body {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.35s ease;
+}
+
+.banned.is-open > .banned__body {
+  grid-template-rows: 1fr;
+}
+
+.banned__body-inner {
+  overflow: hidden;
+  min-height: 0;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.banned.is-open > .banned__body > .banned__body-inner {
+  opacity: 1;
+}
+
+.banned__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.15rem 1.15rem 0.85rem;
+}
+
+.banned__toolbar--search {
+  margin: 0.35rem 0.65rem 0.75rem;
+  padding: 0;
+}
+
+.banned__search {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  appearance: none;
+  border: 1px solid var(--line);
+  background: rgba(0, 0, 0, 0.35);
+  color: var(--bone);
+  font-family: var(--font-body);
+  font-size: var(--text);
+  padding: 0.45rem 0.75rem;
+  outline: none;
+}
+
+.banned__search::placeholder {
+  color: var(--bone-dim);
+  opacity: 0.8;
+}
+
+.banned__search:focus {
+  border-color: rgba(201, 161, 74, 0.55);
+}
+
+.banned__search.is-search-pending {
+  border-color: rgba(201, 161, 74, 0.4);
+  box-shadow: inset 0 0 0 1px rgba(201, 161, 74, 0.12);
+}
+
+.banned__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  max-height: 18rem;
+  overflow: auto;
+  scrollbar-gutter: stable;
+  padding: 0.55rem 0.85rem 0.85rem;
+  border-top: 1px solid rgba(201, 161, 74, 0.12);
+}
+
+.banned__list.is-search-animating {
+  overflow: hidden;
+}
+
+.banned__color-group[hidden],
+.banned__color-group.is-search-hidden {
+  display: none;
+}
+
+.banned__color-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 0.4rem;
+  padding: 0.15rem 0.1rem 0.35rem;
+  border-bottom: 1px solid rgba(201, 161, 74, 0.14);
+}
+
+/* Base gem crystal only (right cell of 234×78 sheet — no decoration). */
+.banned__color-gem {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  flex: none;
+  background-color: transparent;
+  background-image: var(--gem-sheet);
+  background-repeat: no-repeat;
+  background-size: 300% 100%;
+  background-position: 100% 0;
+  image-rendering: auto;
+  overflow: hidden;
+}
+
+.banned__color-gem:not([style*="--gem-sheet"]) {
+  display: none;
+}
+
+.banned__color-label {
+  font-family: var(--font-display);
+  font-size: var(--label);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--bone-dim);
+}
+
+.banned__color-group[data-color="strength"] .banned__color-label {
+  color: #e0a090;
+}
+
+.banned__color-group[data-color="dexterity"] .banned__color-label {
+  color: #9ec8a6;
+}
+
+.banned__color-group[data-color="intelligence"] .banned__color-label {
+  color: #9bb4d8;
+}
+
+.banned__color-count {
+  margin-left: auto;
+  font-family: var(--font-body);
+  font-size: var(--text-meta);
+  color: var(--bone-dim);
+}
+
+.banned__color-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.3rem 0.85rem;
+}
+
+@media (max-width: 720px) {
+  .banned__color-list {
+    grid-template-columns: 1fr;
+  }
+
+  .ascendancy-pool__groups {
+    grid-template-columns: 1fr;
+  }
+}
+
+.skill-pool__section--boxed {
+  margin: 0.35rem 0.65rem 0.75rem;
+  border: 1px solid var(--line);
+  background: rgba(16, 14, 12, 0.55);
+}
+
+.skill-pool__section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.55rem 1rem;
+  min-height: 2.6rem;
+  padding: 0.55rem 0.85rem;
+}
+
+.skill-pool__section-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.55rem 0.85rem;
+  min-width: 0;
+}
+
+.skill-pool__section-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.skill-pool__heading {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-display);
+  font-size: var(--label);
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  line-height: 1.2;
+  color: var(--gold);
+}
+
+.skill-pool__section-title .banned__count {
+  letter-spacing: 0;
+  text-transform: none;
+  font-family: var(--font-body);
+  font-size: var(--text-meta);
+  line-height: 1.2;
+}
+
+.skill-pool__hint {
+  margin-left: 0.45rem;
+  letter-spacing: 0.12em;
+  color: rgba(196, 92, 58, 0.95);
+}
+
+.skill-pool__collapse {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+
+.skill-pool__collapse:hover .skill-pool__heading {
+  color: var(--gold-hot);
+}
+
+.skill-pool__collapse-arrow {
+  width: 0.45rem;
+  height: 0.45rem;
+  flex: none;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  color: var(--gold);
+  transform: rotate(-45deg);
+  transition: transform 0.2s ease;
+}
+
+.skill-pool__section--collapsible.is-open .skill-pool__collapse-arrow {
+  transform: rotate(45deg);
+}
+
+.skill-pool__section--collapsible.is-open > .banned__body {
+  grid-template-rows: 1fr;
+}
+
+.skill-pool__section--collapsible.is-open > .banned__body > .banned__body-inner {
+  opacity: 1;
+}
+
+.skill-pool__section--collapsible:not(.is-open) > .skill-pool__section-head > .skill-pool__section-actions {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.skill-pool__section--painful {
+  border-color: rgba(196, 92, 58, 0.35);
+  background: rgba(48, 22, 14, 0.35);
+}
+
+.skill-pool__section--painful .skill-pool__collapse:hover .skill-pool__heading {
+  color: #f0c0b0;
+}
+
+.skill-pool__section--painful .skill-pool__collapse-arrow {
+  color: #e0a090;
+}
+
+.skill-pool__section--painful .banned__list {
+  border-top-color: rgba(196, 92, 58, 0.2);
+}
+
+.skill-pool__section--painful .banned__item input {
+  accent-color: #c45c3a;
+}
+
+.skill-pool__section--painful .skill-pool__heading {
+  color: #e0a090;
+}
+
+.skill-pool__section--transfigured {
+  border-color: rgba(61, 206, 197, 0.35);
+  background: rgba(12, 36, 34, 0.45);
+}
+
+.skill-pool__reveal {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.skill-pool__reveal.is-open {
+  grid-template-rows: 1fr;
+}
+
+.skill-pool__reveal-inner {
+  overflow: hidden;
+  min-height: 0;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.skill-pool__reveal.is-open > .skill-pool__reveal-inner {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skill-pool__reveal,
+  .skill-pool__reveal-inner {
+    transition: none;
+  }
+
+  .ascendancy-card__art.is-fade-in,
+  .ascendancy-card__art.is-fade-out,
+  .ascendancy-card__text.is-fade-in,
+  .ascendancy-card__text.is-fade-out,
+  .ascendancy-card.is-shining::after {
+    animation: none;
+  }
+}
+
+.skill-pool__section--transfigured .banned__list {
+  border-top-color: rgba(61, 206, 197, 0.2);
+}
+
+.skill-pool__section--transfigured .banned__item input {
+  accent-color: var(--gem-teal);
+}
+
+.skill-pool__section--transfigured .skill-pool__heading {
+  color: #7fdcd4;
+}
+
+.banned__item {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0;
+  padding: 0.2rem 0.25rem;
+  font-size: var(--text);
+  line-height: 1.2;
+  color: var(--bone-dim);
+  cursor: pointer;
+  opacity: 1;
+  transition: opacity 0.15s ease;
+}
+
+.banned__item.is-search-preenter,
+.banned__item.is-search-leaving {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.banned__item[hidden],
+.banned__item.is-search-hidden {
+  display: none;
+}
+
+.banned__item-icon {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  flex: none;
+  object-fit: contain;
+  background: transparent;
+  border: none;
+  image-rendering: auto;
+  overflow: hidden;
+}
+
+/* Gem sheet (234×78): crystal + skill decoration layered. */
+.banned__item-icon-layer {
+  position: absolute;
+  inset: 0;
+  background-image: var(--gem-sheet);
+  background-repeat: no-repeat;
+  background-size: 300% 100%;
+  pointer-events: none;
+}
+
+.banned__item-icon-layer--base {
+  background-position: 100% 0;
+  z-index: 1;
+}
+
+.banned__item-icon-layer--base.is-shaded,
+.banned__color-gem.is-shaded {
+  background-size: 100% 100%;
+  background-position: 0 0;
+}
+
+.banned__item-icon-layer--deco {
+  background-position: 0 0;
+  z-index: 2;
+}
+
+.banned__item-icon-sparkle {
+  position: absolute;
+  inset: 0;
+  background: url("../assets/icons/gems/overlays/sparklebackground.png") center / contain no-repeat;
+  pointer-events: none;
+  z-index: 0;
+  mix-blend-mode: screen;
+}
+
+.banned__item input {
+  accent-color: var(--gold);
+  flex: none;
+}
+
+.banned__item:has(input:checked) {
+  color: var(--bone);
+}
+
+.status {
+  margin: 0;
+  text-align: center;
+  color: var(--ember);
+  font-size: var(--text);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.is-ready body::before {
+    animation: none;
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  .atmosphere::after {
+    animation: none;
+  }
+
+  .banned__body,
+  .banned__body-inner,
+  .banned__item {
+    transition: none;
+  }
+
+  .skill-reel__track.is-spinning {
+    transition: none;
+  }
+
+  .variants {
+    transition: none;
+  }
+
+  .variants__btn {
+    transition: none;
+  }
+
+  .gem__placeholder,
+  .gem__body,
+  .gem.is-morphing {
+    transition: none;
+  }
+}

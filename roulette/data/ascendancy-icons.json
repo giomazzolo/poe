@@ -1,0 +1,22 @@
+{
+  "slayer": "assets/ascendancy-faces/slayer.png",
+  "gladiator": "assets/ascendancy-faces/gladiator.png",
+  "champion": "assets/ascendancy-faces/champion.png",
+  "assassin": "assets/ascendancy-faces/assassin.png",
+  "saboteur": "assets/ascendancy-faces/saboteur.png",
+  "trickster": "assets/ascendancy-faces/trickster.png",
+  "juggernaut": "assets/ascendancy-faces/juggernaut.png",
+  "berserker": "assets/ascendancy-faces/berserker.png",
+  "chieftain": "assets/ascendancy-faces/chieftain.png",
+  "necromancer": "assets/ascendancy-faces/necromancer.png",
+  "occultist": "assets/ascendancy-faces/occultist.png",
+  "elementalist": "assets/ascendancy-faces/elementalist.png",
+  "deadeye": "assets/ascendancy-faces/deadeye.png",
+  "warden": "assets/ascendancy-faces/warden.png",
+  "pathfinder": "assets/ascendancy-faces/pathfinder.png",
+  "inquisitor": "assets/ascendancy-faces/inquisitor.png",
+  "hierophant": "assets/ascendancy-faces/hierophant.png",
+  "guardian": "assets/ascendancy-faces/guardian.png",
+  "ascendant": "assets/ascendancy-faces/ascendant.png",
+  "reliquarian": "assets/ascendancy-faces/reliquarian.png"
+}
