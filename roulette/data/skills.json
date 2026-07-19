@@ -12,7 +12,7 @@
       "damageSkills = default roulette pool.",
       "bannedSkills = optional opt-in skills (mobility, setup, or community-cited painful mains).",
       "utilitySkills = non-damaging base skills (curses, auras, etc.).",
-      "excludedSkills = graft/item skills that are not socketable gems for a normal build."
+      "excludedSkills = unobtainable gems, graft skills, and other non-rollable actives."
     ],
     "counts": {
       "total": 570,
@@ -25,16 +25,14 @@
       "white": 5,
       "dealsDamage": 459,
       "utility": 111,
-      "damageSkills": 169,
+      "damageSkills": 167,
       "bannedSkills": 33,
       "utilitySkills": 85,
-      "excludedSkills": 17
+      "excludedSkills": 19
     }
   },
   "damageSkills": [
     { "name": "Absolution", "id": "absolution", "color": "strength", "variant": "base", "dealsDamage": true, "requiredLevel": 12, "tags": ["spell", "minion", "duration", "physical", "lightning", "area"] },
-    { "name": "Ancestral Protector", "id": "ancestral_protector", "color": "strength", "variant": "base", "dealsDamage": true, "requiredLevel": 4, "tags": ["attack", "totem", "melee", "strike"] },
-    { "name": "Ancestral Warchief", "id": "ancestral_warchief", "color": "strength", "variant": "base", "dealsDamage": true, "requiredLevel": 28, "tags": ["attack", "totem", "melee", "area", "slam"] },
     { "name": "Animate Guardian", "id": "animate_guardian", "color": "strength", "variant": "base", "dealsDamage": true, "requiredLevel": 28, "tags": ["spell", "minion"] },
     { "name": "Animate Weapon", "id": "animate_weapon", "color": "dexterity", "variant": "base", "dealsDamage": true, "requiredLevel": 4, "tags": ["duration", "minion", "spell", "physical"] },
     { "name": "Arc", "id": "arc", "color": "intelligence", "variant": "base", "dealsDamage": true, "requiredLevel": 12, "tags": ["spell", "chaining", "lightning"] },
@@ -325,6 +323,8 @@
     { "name": "Zealotry", "id": "zealotry", "color": "intelligence", "variant": "base", "dealsDamage": false, "requiredLevel": 24, "tags": ["aura", "critical", "spell", "area"] }
   ],
   "excludedSkills": [
+    { "name": "Ancestral Protector", "id": "ancestral_protector", "color": "strength", "variant": "base", "dealsDamage": true, "requiredLevel": 4, "tags": ["attack", "totem", "melee", "strike"] },
+    { "name": "Ancestral Warchief", "id": "ancestral_warchief", "color": "strength", "variant": "base", "dealsDamage": true, "requiredLevel": 28, "tags": ["attack", "totem", "melee", "area", "slam"] },
     { "name": "Call the Pyre", "id": "graft_skill_xoph_flame_pillars", "color": "strength", "variant": "base", "dealsDamage": true, "tags": ["fire", "area", "attack", "melee", "bow"] },
     { "name": "Dance in the White", "id": "graft_skill_tul_tornado", "color": "dexterity", "variant": "base", "dealsDamage": true, "tags": ["spell", "projectile", "duration", "area", "cold"] },
     { "name": "Enervating Grasp", "id": "graft_skill_esh_lightning_hands", "color": "intelligence", "variant": "base", "dealsDamage": true, "tags": ["area", "spell", "lightning"] },

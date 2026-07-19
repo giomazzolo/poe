@@ -414,9 +414,9 @@ export function resetVariantArrival() {
 /**
  * Descend winner gem from reel into reserved slots; split if multiple versions.
  * Opens the variants row as gems drop so the tooltip is pushed down.
- * @param {{ skill: object, sourceCell?: HTMLElement | null, onSplitStart?: () => void, separateTrans?: boolean }} opts
+ * @param {{ skill: object, sourceCell?: HTMLElement | null, onDescendComplete?: () => void, separateTrans?: boolean }} opts
  */
-export async function playVariantArrival({ skill, sourceCell, onSplitStart, separateTrans }) {
+export async function playVariantArrival({ skill, sourceCell, onDescendComplete, separateTrans }) {
   const list = els.skillVariantsList;
   const nav = els.skillVariants;
   if (!skill || !list || !nav) return;
@@ -436,7 +436,7 @@ export async function playVariantArrival({ skill, sourceCell, onSplitStart, sepa
     await openVariantsRow(nav);
     finishArrival(list, nav, skill.id);
     clearFlyers();
-    onSplitStart?.();
+    onDescendComplete?.();
     return;
   }
 
@@ -466,6 +466,8 @@ export async function playVariantArrival({ skill, sourceCell, onSplitStart, sepa
   if (versions.length === 1) {
     const target = hostSlotRect(buttons[0], host);
     await animateFlyerTo(primary, fromRect, target, DESCEND_MS);
+    // Tooltip starts as the gem lands — runs beside button settle.
+    onDescendComplete?.();
     placeFlyer(primary, hostSlotRect(buttons[0], host));
     finishArrival(list, nav, chosenId, [primary]);
     return;
@@ -476,8 +478,8 @@ export async function playVariantArrival({ skill, sourceCell, onSplitStart, sepa
 
   await animateFlyerTo(primary, fromRect, descendTarget, DESCEND_MS);
 
-  // Tooltip appears as soon as the split begins.
-  onSplitStart?.();
+  // Tooltip appears the moment the reel drop lands; split runs in parallel.
+  onDescendComplete?.();
   primary.classList.add("is-selected");
 
   void list.offsetHeight;

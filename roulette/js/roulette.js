@@ -119,12 +119,12 @@ export async function animateSkill({ exclude = false } = {}) {
   resetVariantArrival();
 
   const reveal = async ({ winnerCell } = {}) => {
-    await waitingPromise;
-
     let tooltipShown = false;
-    const showTooltip = () => {
+    const showTooltip = async () => {
       if (tooltipShown) return;
       tooltipShown = true;
+      // Waiting morph may still be finishing from roll start — don't block the drop.
+      await waitingPromise;
       renderGemCard(finalItem);
       state.selectedSkillId = finalItem.id;
       // Don't toggle button active here — that happens on instant reveal after split.
@@ -133,11 +133,14 @@ export async function animateSkill({ exclude = false } = {}) {
     await playVariantArrival({
       skill: finalItem,
       sourceCell: winnerCell,
-      onSplitStart: showTooltip,
+      // Fire as soon as the gem lands from the reel; tooltip morph runs beside split/settle.
+      onDescendComplete: () => {
+        void showTooltip();
+      },
       separateTrans,
     });
-    // Single-variant drops (no split) still need the tooltip after arrival.
-    showTooltip();
+    // Safety for reduced-motion / early-exit paths that skip the descend callback.
+    await showTooltip();
 
     card.classList.remove("is-rolling");
     card.classList.add("has-result");
