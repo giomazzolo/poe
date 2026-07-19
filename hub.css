@@ -22,6 +22,9 @@ body {
 }
 
 body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
   font-family: var(--font-body);
   color: var(--bone);
   background: var(--bg-deep);
@@ -41,9 +44,9 @@ body {
 .hub {
   position: relative;
   z-index: 1;
+  flex: 1 0 auto;
   width: min(36rem, calc(100% - 2rem));
   margin: 0 auto;
-  min-height: 100vh;
   display: grid;
   align-content: center;
   gap: 2.5rem;
@@ -110,4 +113,27 @@ body {
   font-size: 1.05rem;
   font-style: italic;
   color: var(--bone-dim);
+}
+
+.site-legal {
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+  width: min(36rem, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: 1rem 0 1.75rem;
+  border-top: 1px solid rgba(201, 161, 74, 0.18);
+  text-align: center;
+}
+
+.site-legal p {
+  margin: 0 auto;
+  max-width: 46ch;
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-style: normal;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  line-height: 1.5;
+  color: rgba(168, 151, 125, 0.58);
 }

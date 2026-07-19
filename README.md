@@ -19,4 +19,4 @@ Opens the hub at `http://127.0.0.1:8080/` (roulette at `/roulette/`).
 
 Repo root is the site root. After Pages is enabled on `main`:
 
-`https://<user>.github.io/poe/` · roulette at `…/poe/roulette/`
+`https://giomazzolo.github.io/poe/` · roulette at `https://giomazzolo.github.io/poe/roulette/`

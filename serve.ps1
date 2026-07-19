@@ -84,10 +84,21 @@ try {
   while ($listener.IsListening) {
     $ctx = $listener.GetContext()
     $path = [Uri]::UnescapeDataString($ctx.Request.Url.LocalPath.TrimStart("/"))
-    if ([string]::IsNullOrWhiteSpace($path)) { $path = "index.html" }
-    elseif ($path.EndsWith("/")) { $path = $path + "index.html" }
+    $path = $path.Replace("\", "/")
 
-    $full = [System.IO.Path]::GetFullPath((Join-Path $root $path))
+    if ([string]::IsNullOrWhiteSpace($path)) {
+      $path = "index.html"
+    }
+    else {
+      $path = $path.TrimEnd("/")
+      $asDir = [System.IO.Path]::GetFullPath((Join-Path $root ($path -replace "/", [System.IO.Path]::DirectorySeparatorChar)))
+      if (Test-Path -LiteralPath $asDir -PathType Container) {
+        $path = "$path/index.html"
+      }
+    }
+
+    $relative = $path -replace "/", [System.IO.Path]::DirectorySeparatorChar
+    $full = [System.IO.Path]::GetFullPath((Join-Path $root $relative))
     $rootFull = [System.IO.Path]::GetFullPath($root)
     if (-not $rootFull.EndsWith([System.IO.Path]::DirectorySeparatorChar)) {
       $rootFull = $rootFull + [System.IO.Path]::DirectorySeparatorChar
