@@ -70,7 +70,7 @@
 }
 
 html {
-  font-size: 15.5px;
+  font-size: 19.375px;
   background: var(--bg-deep);
   scrollbar-width: thin;
   scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
@@ -109,20 +109,23 @@ html,
 body {
   margin: 0;
   min-height: 100%;
+  max-width: 100%;
+  overflow-x: clip;
 }
 
 body {
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
   color: var(--bone);
   font-family: var(--font-body);
   font-size: var(--text);
   background: var(--bg-deep);
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
-/* Cover the fully-painted page, then lift away — avoids fading/transforming page content (border flicker). */
+/* Cover the fully-painted page, then lift away ? avoids fading/transforming page content (border flicker). */
 body::before {
   content: "";
   position: fixed;
@@ -182,13 +185,17 @@ html.is-ready body::before {
   position: relative;
   z-index: 1;
   flex: 1 0 auto;
-  width: min(760px, calc(100% - 2rem));
+  /* min-width:0 ? body is a column flex; default min-width:auto lets nowrap controls widen the page (iOS starts ?zoomed in?). */
+  min-width: 0;
+  max-width: 100%;
+  width: min(760px, 100%);
   margin: 0 auto;
   display: grid;
   align-content: start;
   gap: 1.75rem;
   /* Extra bottom space so filter panels can open without shoving the page edge */
-  padding: 2.5rem 0 80vh;
+  padding: 2.5rem max(1rem, env(safe-area-inset-right, 0px)) 80vh
+    max(1rem, env(safe-area-inset-left, 0px));
 }
 
 .brand {
@@ -257,9 +264,12 @@ html.is-ready body::before {
   position: relative;
   z-index: 1;
   flex-shrink: 0;
-  width: min(760px, calc(100% - 2rem));
+  min-width: 0;
+  max-width: 100%;
+  width: min(760px, 100%);
   margin: 0 auto;
-  padding: 1rem 0 1.75rem;
+  padding: 1rem max(1rem, env(safe-area-inset-right, 0px))
+    max(1.75rem, env(safe-area-inset-bottom, 0px)) max(1rem, env(safe-area-inset-left, 0px));
   border-top: 1px solid rgba(201, 161, 74, 0.18);
   text-align: center;
 }
@@ -279,6 +289,8 @@ html.is-ready body::before {
 .roll-block {
   display: grid;
   gap: 0.85rem;
+  min-width: 0;
+  max-width: 100%;
 }
 
 #skill-section,
@@ -383,7 +395,8 @@ html.is-ready body::before {
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
-  min-width: 22rem;
+  /* 0 ? never inflate document min-content / iOS initial zoom. Width comes from the panel. */
+  min-width: 0;
   height: 55px;
   margin: 0;
   padding: 0 55px;
@@ -395,6 +408,7 @@ html.is-ready body::before {
   font-weight: 400;
   letter-spacing: 0.04em;
   text-transform: none;
+  overflow: hidden;
   background-color: #12100c;
   background-image:
     url("../assets/poe-tooltip/itemsheadercurrencyleft.webp"),
@@ -428,6 +442,14 @@ html.is-ready body::before {
   filter: grayscale(0.3);
 }
 
+/* Compact currency header for dense UI (settings modals). */
+.btn--currency.btn--small {
+  height: 36px;
+  padding: 0 36px;
+  font-size: 1.05rem;
+  background-size: 36px 36px, 36px 36px, 41px 36px;
+}
+
 /* PoE quest-item title bar (green quest popup headers). */
 .btn--quest {
   position: relative;
@@ -435,7 +457,8 @@ html.is-ready body::before {
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
-  min-width: 22rem;
+  /* 0 ? never inflate document min-content / iOS initial zoom. Width comes from the panel. */
+  min-width: 0;
   height: 55px;
   margin: 0;
   padding: 0 55px;
@@ -447,6 +470,7 @@ html.is-ready body::before {
   font-weight: 400;
   letter-spacing: 0.04em;
   text-transform: none;
+  overflow: hidden;
   background-color: #0c120c;
   background-image:
     url("../assets/poe-tooltip/itemsheaderquestleft.webp"),
@@ -490,6 +514,7 @@ html.is-ready body::before {
   position: relative;
   width: 100%;
   max-width: 680px;
+  min-width: 0;
   margin-inline: auto;
   display: flex;
   flex-direction: column;
@@ -597,7 +622,7 @@ html.is-ready body::before {
   display: flex;
   align-items: center;
   height: 100%;
-  gap: 9px;
+  gap: 0;
   padding: 0 9px;
   will-change: transform;
   transform: translateX(0);
@@ -674,7 +699,7 @@ html.is-ready body::before {
   position: relative;
   display: block;
   width: 100%;
-  /* Match official promo banners (530×245) exactly — no padding on this box. */
+  /* Match official promo banners (530?245) exactly ? no padding on this box. */
   aspect-ratio: 530 / 245;
   min-height: 0;
   padding: 0;
@@ -684,6 +709,73 @@ html.is-ready body::before {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.55);
   /* Keeps dual-layer opacity crossfade from going muddy mid-blend. */
   isolation: isolate;
+  transition: box-shadow 0.35s ease;
+}
+
+.ascendancy-card.has-result {
+  box-shadow:
+    0 0 18px rgba(201, 161, 74, 0.28),
+    0 0 36px rgba(201, 161, 74, 0.14),
+    0 0 10px rgba(0, 0, 0, 0.55);
+}
+
+/* Traveling gold shine along the edge (conic highlight + soft halo).
+   Pattern: masked rotating conic arc ? see e.g. animated gradient/shine borders. */
+@property --gold-shine-from {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+.ascendancy-card.has-result::before,
+.gem.has-result::before,
+.variants__btn.is-active::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  padding: 1.5px;
+  background: conic-gradient(
+    from var(--gold-shine-from),
+    transparent 0%,
+    transparent 42%,
+    rgba(201, 161, 74, 0.05) 48%,
+    rgba(232, 197, 106, 0.45) 54%,
+    rgba(255, 244, 200, 0.95) 58%,
+    rgba(232, 197, 106, 0.55) 62%,
+    rgba(201, 161, 74, 0.12) 68%,
+    transparent 74%,
+    transparent 100%
+  );
+  opacity: 0.95;
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  animation: gold-shine-drift 16s linear infinite;
+}
+
+.gem.has-result::before {
+  padding: 2px;
+  animation-duration: 20s;
+  animation-direction: reverse;
+}
+
+.variants__btn.is-active::before {
+  padding: 1.5px;
+  animation-duration: 14s;
+  z-index: 3;
+}
+
+@keyframes gold-shine-drift {
+  to {
+    --gold-shine-from: 360deg;
+  }
 }
 
 .ascendancy-card__art {
@@ -699,7 +791,7 @@ html.is-ready body::before {
   object-fit: fill;
   object-position: center center;
   transform-origin: center center;
-  /* Tuned in dev/banner-tuner.html — keep in sync with that page. */
+  /* Tuned in dev/banner-tuner.html ? keep in sync with that page. */
   --art-x: 0%;
   --art-y: 3.2%;
   --art-scale: 1.143;
@@ -710,7 +802,7 @@ html.is-ready body::before {
   z-index: 0;
 }
 
-/* PoELab page background — waiting / rolling placeholder (dev/lab-bg-tuner.html). */
+/* PoELab page background ? waiting / rolling placeholder (dev/lab-bg-tuner.html). */
 .ascendancy-card__art.is-placeholder {
   object-fit: contain;
   object-position: center top;
@@ -766,7 +858,7 @@ html.is-ready body::before {
   animation: ascendancy-crossfade-in 0.22s ease both;
 }
 
-/* Same one-shot reflection as .gem__header.is-shining — after a result lands. */
+/* Same one-shot reflection as .gem__header.is-shining ? after a result lands. */
 .ascendancy-card.is-shining::after {
   content: "";
   position: absolute;
@@ -792,26 +884,7 @@ html.is-ready body::before {
 }
 
 .ascendancy-card__veil {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  background:
-    linear-gradient(
-      90deg,
-      rgba(5, 8, 5, 0.82) 0%,
-      rgba(5, 8, 5, 0.45) 45.6%,
-      rgba(5, 8, 5, 0.12) 84%,
-      rgba(5, 8, 5, 0.28) 100%
-    );
-  opacity: 0;
-  transition: opacity 0.35s ease;
-}
-
-.ascendancy-card.has-result .ascendancy-card__veil,
-.ascendancy-card.is-rolling .ascendancy-card__veil,
-.ascendancy-card.is-waiting .ascendancy-card__veil {
-  opacity: 1;
+  display: none;
 }
 
 .ascendancy-card.is-waiting {
@@ -826,7 +899,11 @@ html.is-ready body::before {
   letter-spacing: 0.28em;
   text-transform: uppercase;
   color: #4ae63a;
-  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.85);
+  text-shadow:
+    0 0 2px rgba(0, 0, 0, 1),
+    0 1px 2px rgba(0, 0, 0, 1),
+    0 2px 8px rgba(0, 0, 0, 0.95),
+    0 0 18px rgba(0, 0, 0, 0.85);
 }
 
 .ascendancy-card__value {
@@ -837,7 +914,11 @@ html.is-ready body::before {
   font-weight: 700;
   line-height: 1.15;
   color: var(--bone);
-  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.9);
+  text-shadow:
+    0 0 2px rgba(0, 0, 0, 1),
+    0 1px 3px rgba(0, 0, 0, 1),
+    0 3px 12px rgba(0, 0, 0, 0.95),
+    0 0 22px rgba(0, 0, 0, 0.9);
 }
 
 .ascendancy-card__value.is-spinning {
@@ -849,7 +930,11 @@ html.is-ready body::before {
   margin: 0.28rem 0 0;
   font-size: var(--text-meta);
   color: var(--bone-dim);
-  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.85);
+  text-shadow:
+    0 0 2px rgba(0, 0, 0, 1),
+    0 1px 2px rgba(0, 0, 0, 1),
+    0 2px 8px rgba(0, 0, 0, 0.95),
+    0 0 16px rgba(0, 0, 0, 0.85);
 }
 
 .ascendancy-card.is-waiting .ascendancy-card__meta,
@@ -868,7 +953,11 @@ html.is-ready body::before {
   text-transform: none;
   white-space: pre-line;
   color: #a8a8a8;
-  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.9);
+  text-shadow:
+    0 0 2px rgba(0, 0, 0, 1),
+    0 1px 2px rgba(0, 0, 0, 1),
+    0 2px 8px rgba(0, 0, 0, 0.95),
+    0 0 16px rgba(0, 0, 0, 0.85);
 }
 
 .ascendancy-card__flavour[hidden] {
@@ -974,6 +1063,17 @@ html.is-ready body::before {
     inset 0 0 0 1px rgba(27, 162, 155, 0.12),
     0 10px 28px rgba(0, 0, 0, 0.5);
   overflow: hidden;
+  transition:
+    border-color 0.35s ease,
+    box-shadow 0.35s ease;
+}
+
+.gem.has-result {
+  border-color: rgba(201, 161, 74, 0.28);
+  box-shadow:
+    0 0 18px rgba(201, 161, 74, 0.3),
+    0 0 34px rgba(201, 161, 74, 0.14),
+    0 10px 28px rgba(0, 0, 0, 0.5);
 }
 
 .gem.is-morphing {
@@ -984,13 +1084,13 @@ html.is-ready body::before {
 .gem__stage {
   flex: 1 1 auto;
   min-height: 0;
-  overflow: hidden; /* always — not toggled with morph, so spacing can’t pop at the end */
+  overflow: hidden; /* always ? not toggled with morph, so spacing can?t pop at the end */
 }
 
 .gem__foot {
   flex: 0 0 auto;
   margin-top: auto;
-  /* Gap above the sep must be padding — margin collapses with the stage and twitches. */
+  /* Gap above the sep must be padding ? margin collapses with the stage and twitches. */
   padding-top: 0.55rem;
 }
 
@@ -1041,7 +1141,7 @@ html.is-ready body::before {
 }
 
 /*
- * Official gem PNGs are 234×78 sheets: [decoration 78][empty 78][gem 78].
+ * Official gem PNGs are 234?78 sheets: [decoration 78][empty 78][gem 78].
  * Transfigured: crystal cell is HSV-shaded in JS (PShad_AlternateSkillGemEffect).
  * Trarthus: base sheet + SparkleBackground underlay.
  */
@@ -1060,7 +1160,7 @@ html.is-ready body::before {
   opacity: 0;
 }
 
-/* TrarthanGem underlay — Art/2DItems/Gems/Overlays/SparkleBackground.dds */
+/* TrarthanGem underlay ? Art/2DItems/Gems/Overlays/SparkleBackground.dds */
 .gem__sparkle {
   position: absolute;
   inset: 0;
@@ -1071,7 +1171,7 @@ html.is-ready body::before {
   transform: translate(var(--gem-align-x, 0%), var(--gem-align-y, 0%));
 }
 
-/* Pre-composited inventory icon (78×78), when no sheet/shade path applies. */
+/* Pre-composited inventory icon (78?78), when no sheet/shade path applies. */
 .gem__inventory {
   position: absolute;
   inset: 0;
@@ -1094,7 +1194,7 @@ html.is-ready body::before {
   transform: translate(var(--gem-align-x, 0%), var(--gem-align-y, 0%));
 }
 
-/* Right cell — attribute-coloured gem crystal (or shaded data-URL) */
+/* Right cell ? attribute-coloured gem crystal (or shaded data-URL) */
 .gem__art--base {
   background-position: 100% 0;
   z-index: 1;
@@ -1105,7 +1205,7 @@ html.is-ready body::before {
   background-position: 0 0;
 }
 
-/* Left cell — skill-unique decoration, drawn above the gem */
+/* Left cell ? skill-unique decoration, drawn above the gem */
 .gem__art--deco {
   background-position: 0 0;
   z-index: 2;
@@ -1143,7 +1243,7 @@ html.is-ready body::before {
   background-size: 55px 55px, 55px 55px, 63px 55px;
 }
 
-/* One-shot reflection — triggered after the tooltip finishes morphing in. */
+/* One-shot reflection ? triggered after the tooltip finishes morphing in. */
 .gem__header.is-shining::after {
   content: "";
   position: absolute;
@@ -1347,6 +1447,7 @@ html.is-ready body::before {
   position: relative;
   width: 100%;
   max-width: 680px;
+  min-width: 0;
   margin-inline: auto;
   display: flex;
   flex-direction: column;
@@ -1473,17 +1574,23 @@ html.is-ready body::before {
 }
 
 .settings-modal {
-  width: min(980px, calc(100vw - 1.25rem));
-  max-height: min(94vh, 1200px);
+  /* % resolves against the viewport for top-layer dialogs ? avoid 100vw/dvw overflow. */
+  box-sizing: border-box;
+  width: min(980px, calc(100% - 1.25rem));
+  max-width: calc(100% - 1.25rem);
+  max-height: min(94dvh, 1200px);
   margin: auto;
   padding: 0;
   border: 1px solid rgba(201, 161, 74, 0.45);
   background: #140f0c;
   color: var(--bone);
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.65);
   overflow: hidden;
-  scrollbar-width: thin;
-  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.65);
+}
+
+.settings-modal[open] {
+  display: flex;
+  flex-direction: column;
 }
 
 .settings-modal::backdrop {
@@ -1494,8 +1601,12 @@ html.is-ready body::before {
 .settings-modal__panel {
   display: flex;
   flex-direction: column;
-  max-height: min(94vh, 1200px);
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: min(94dvh, 1200px);
   overflow: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
 }
 
 .settings-modal__head {
@@ -1548,11 +1659,19 @@ html.is-ready body::before {
   outline-offset: 2px;
 }
 
+.settings-modal__dismiss {
+  flex: none;
+  width: 100%;
+  box-sizing: border-box;
+  border-top: 1px solid rgba(201, 161, 74, 0.28);
+}
+
 .settings-modal__body {
   overflow: auto;
   padding: 1.15rem 1.25rem 1.4rem;
   display: grid;
   gap: 0.95rem;
+  min-height: 0;
   scrollbar-gutter: stable;
 }
 
@@ -1570,7 +1689,7 @@ html.is-ready body::before {
   );
 }
 
-/* Compact single-count strip (Ascendancy pool — not a 3-stat grid). */
+/* Compact single-count strip (Ascendancy pool ? not a 3-stat grid). */
 .settings-modal__bar {
   display: flex;
   flex-wrap: wrap;
@@ -1620,10 +1739,16 @@ html.is-ready body::before {
   display: flex;
   flex-wrap: wrap;
   gap: 0.4rem;
+  min-width: 0;
+}
+
+.settings-modal__bar-actions .btn--currency {
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .settings-modal--ascendancy {
-  width: min(760px, calc(100vw - 1.25rem));
+  width: min(760px, calc(100% - 1.25rem));
 }
 
 .settings-modal--ascendancy .settings-modal__body {
@@ -1663,7 +1788,7 @@ html.is-ready body::before {
 }
 
 .settings-modal .banned__list {
-  max-height: min(42vh, 28rem);
+  max-height: min(42dvh, 28rem);
 }
 
 .option--settings {
@@ -1721,7 +1846,8 @@ html.is-ready body::before {
   position: fixed;
   z-index: 80;
   box-sizing: border-box;
-  width: min(22rem, calc(100vw - 1.5rem));
+  width: min(22rem, calc(100% - 1.5rem));
+  max-width: calc(100% - 1.5rem);
   padding: 0.85rem 1rem;
   border: 1px solid rgba(201, 161, 74, 0.45);
   background: #1a1510;
@@ -1907,8 +2033,8 @@ html.is-ready body::before {
 .variants__btn.is-active {
   opacity: 1;
   filter: none;
-  border-color: var(--gem-teal);
-  box-shadow: 0 0 12px rgba(61, 206, 197, 0.4);
+  border-color: rgba(201, 161, 74, 0.35);
+  box-shadow: 0 0 14px rgba(201, 161, 74, 0.35);
   z-index: 2;
 }
 
@@ -1923,7 +2049,7 @@ html.is-ready body::before {
 
 .variants.is-reserved .variants__btn.is-arriving,
 .variants.is-reserved .variants__btn.is-arriving.is-active {
-  /* Keep layout size while gems fly in — stay fully hidden, no partial active peek. */
+  /* Keep layout size while gems fly in ? stay fully hidden, no partial active peek. */
   visibility: hidden;
   opacity: 0 !important;
   box-shadow: none !important;
@@ -1996,8 +2122,8 @@ html.is-ready body::before {
 .variant-flyer.is-visible.is-selected {
   opacity: 1;
   filter: none;
-  border-color: var(--gem-teal);
-  box-shadow: 0 0 12px rgba(61, 206, 197, 0.4);
+  border-color: rgba(201, 161, 74, 0.35);
+  box-shadow: 0 0 14px rgba(201, 161, 74, 0.35);
 }
 
 .variant-flyer .gem__art-frame,
@@ -2170,7 +2296,7 @@ html.is-ready body::before {
   border-bottom: 1px solid rgba(201, 161, 74, 0.14);
 }
 
-/* Base gem crystal only (right cell of 234×78 sheet — no decoration). */
+/* Base gem crystal only (right cell of 234?78 sheet ? no decoration). */
 .banned__color-gem {
   position: relative;
   width: 48px;
@@ -2229,6 +2355,180 @@ html.is-ready body::before {
 
   .ascendancy-pool__groups {
     grid-template-columns: 1fr;
+  }
+}
+
+/* Phone: denser scale (reels are px ? they don?t follow rem). Keep overflow fixes; restore the
+   visual size you had when pinched-out, without needing browser zoom. */
+@media (max-width: 640px) {
+  html {
+    font-size: 15.375px;
+  }
+
+  .app {
+    gap: 1.45rem;
+    padding-top: 1.75rem;
+  }
+
+  .ascendancy-reel__viewport {
+    height: 80px;
+  }
+
+  .ascendancy-reel__track {
+    gap: 0;
+    padding: 0 5px;
+  }
+
+  .ascendancy-reel__cell,
+  .ascendancy-reel__cell img {
+    width: 84px;
+    height: 61px;
+  }
+
+  .skill-reel__viewport {
+    height: 70px;
+  }
+
+  .skill-reel__cell,
+  .variants__btn,
+  .variant-flyer {
+    width: 58px;
+    height: 58px;
+  }
+
+  .btn--quest,
+  .btn--currency {
+    height: 36px;
+    padding: 0 36px;
+    background-size: 36px 36px, 36px 36px, 42px 36px;
+    font-size: 1.15rem;
+  }
+
+  .btn--currency {
+    font-size: 1.25rem;
+  }
+
+  .ascendancy-panel__roll,
+  .gem-panel__roll {
+    font-size: 1.1rem;
+    padding-inline: 1.6rem;
+  }
+
+  .ascendancy-panel__bar.is-split .ascendancy-panel__roll,
+  .ascendancy-panel__exclude-roll,
+  .gem-panel__bar.is-split .gem-panel__roll,
+  .gem-panel__exclude-roll {
+    font-size: 0.95rem;
+    padding-inline: 1.1rem;
+  }
+
+  .settings-modal {
+    width: calc(100% - 0.75rem);
+    max-width: none;
+    max-height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 0.75rem);
+  }
+
+  .settings-modal__panel {
+    max-height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 0.75rem);
+  }
+
+  .settings-modal__head {
+    gap: 0.65rem;
+    padding: 0.75rem 0.85rem;
+    padding-top: max(0.75rem, env(safe-area-inset-top, 0px));
+  }
+
+  .settings-modal__title {
+    letter-spacing: 0.14em;
+  }
+
+  .settings-modal__body {
+    padding: 0.85rem 0.75rem 1.1rem;
+    gap: 0.75rem;
+    scrollbar-gutter: auto;
+  }
+
+  .settings-modal__counts {
+    gap: 0.2rem;
+    padding: 0.65rem 0.2rem;
+    margin: 0 0 0.15rem;
+  }
+
+  .settings-modal__stat-label {
+    letter-spacing: 0.1em;
+  }
+
+  .settings-modal__bar {
+    padding: 0.4rem 0 0.65rem;
+    gap: 0.5rem 0.75rem;
+  }
+
+  .settings-modal .banned__list {
+    max-height: min(48dvh, 22rem);
+  }
+
+  .skill-pool__section--boxed {
+    margin: 0.25rem 0 0.55rem;
+  }
+
+  .settings-modal__bar-actions {
+    width: 100%;
+    flex-wrap: nowrap;
+  }
+
+  .settings-modal__bar-actions .btn--currency {
+    flex: 1 1 0;
+  }
+
+  .skill-pool__section-head {
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    padding: 0.45rem 0.55rem;
+    min-height: 0;
+  }
+
+  .skill-pool__section-title {
+    flex: 1 1 auto;
+    width: 100%;
+    min-width: 0;
+    flex-wrap: nowrap;
+    gap: 0.35rem 0.5rem;
+  }
+
+  .skill-pool__collapse {
+    min-width: 0;
+  }
+
+  .skill-pool__heading {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    letter-spacing: 0.12em;
+  }
+
+  .skill-pool__section-actions {
+    flex: 1 1 100%;
+    width: 100%;
+    flex-wrap: nowrap;
+    gap: 0.35rem;
+  }
+
+  .skill-pool__section-actions .btn--currency {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  .settings-modal .btn--currency.btn--small {
+    height: 30px;
+    padding: 0 28px;
+    font-size: 0.88rem;
+    background-size: 30px 30px, 30px 30px, 34px 30px;
+  }
+
+  .info-tip__panel {
+    width: calc(100% - 1rem);
+    max-width: none;
+    padding: 0.75rem 0.85rem;
   }
 }
 
@@ -2330,8 +2630,7 @@ html.is-ready body::before {
 }
 
 .skill-pool__section--collapsible:not(.is-open) > .skill-pool__section-head > .skill-pool__section-actions {
-  visibility: hidden;
-  pointer-events: none;
+  display: none;
 }
 
 .skill-pool__section--painful {
@@ -2449,7 +2748,7 @@ html.is-ready body::before {
   overflow: hidden;
 }
 
-/* Gem sheet (234×78): crystal + skill decoration layered. */
+/* Gem sheet (234?78): crystal + skill decoration layered. */
 .banned__item-icon-layer {
   position: absolute;
   inset: 0;
@@ -2511,6 +2810,12 @@ html.is-ready body::before {
     animation: none;
   }
 
+  .ascendancy-card.has-result::before,
+  .gem.has-result::before,
+  .variants__btn.is-active::before {
+    animation: none;
+  }
+
   .banned__body,
   .banned__body-inner,
   .banned__item {
@@ -2535,3 +2840,4 @@ html.is-ready body::before {
     transition: none;
   }
 }
+

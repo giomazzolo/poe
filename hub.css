@@ -51,6 +51,8 @@ body {
   align-content: center;
   gap: 2rem;
   padding: 2.5rem 0;
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
 }
 
 .hub__brand {
@@ -122,6 +124,9 @@ body {
   width: min(36rem, calc(100% - 2rem));
   margin: 0 auto;
   padding: 1rem 0 1.75rem;
+  padding-bottom: max(1.75rem, env(safe-area-inset-bottom, 0px));
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
   border-top: 1px solid rgba(201, 161, 74, 0.18);
   text-align: center;
 }

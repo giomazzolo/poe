@@ -10,11 +10,22 @@ import { getVersionsForSkill, mountVariantButtons } from "./pool.js";
 const DESCEND_MS = 400;
 const SPLIT_MS = 320;
 const EXPAND_MS = 400;
-const FLYER_SIZE = 92;
 const FADE_OUT_MS = 280;
 /** Re-roll reverse: quick merge then climb back into the reel. */
 const MERGE_MS = 150;
 const ASCEND_MS = 180;
+
+/** Live gem tile size (CSS may shrink on mobile — never hardcode 92 for layout). */
+function flyerSize() {
+  const probe =
+    document.querySelector(".skill-reel__cell") ||
+    document.querySelector(".variants__btn");
+  if (probe) {
+    const width = Number.parseFloat(getComputedStyle(probe).width);
+    if (Number.isFinite(width) && width > 0) return width;
+  }
+  return 92;
+}
 
 function reducedMotion() {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -78,18 +89,19 @@ function findReturnCell() {
 }
 
 function hostReelReturnRect(host = flyerHost()) {
+  const size = flyerSize();
   const cell = findReturnCell();
   if (cell) return hostSlotRect(cell, host);
   const viewport = els.skillReel?.querySelector(".skill-reel__viewport");
   if (!viewport) {
-    return { left: 0, top: 0, width: FLYER_SIZE, height: FLYER_SIZE };
+    return { left: 0, top: 0, width: size, height: size };
   }
   const box = toHostRect(viewport.getBoundingClientRect(), host);
   return {
-    left: box.left + box.width / 2 - FLYER_SIZE / 2,
-    top: box.top + (box.height - FLYER_SIZE) / 2,
-    width: FLYER_SIZE,
-    height: FLYER_SIZE,
+    left: box.left + box.width / 2 - size / 2,
+    top: box.top + (box.height - size) / 2,
+    width: size,
+    height: size,
   };
 }
 
@@ -132,32 +144,35 @@ function buildFlyer(skill) {
 }
 
 function placeFlyer(flyer, rect) {
+  const size = rect.width || flyerSize();
   flyer.style.left = `${rect.left}px`;
   flyer.style.top = `${rect.top}px`;
-  flyer.style.width = `${FLYER_SIZE}px`;
-  flyer.style.height = `${FLYER_SIZE}px`;
+  flyer.style.width = `${size}px`;
+  flyer.style.height = `${rect.height || size}px`;
   flyer.style.transform = "translate(0, 0) scale(1)";
 }
 
-/** Layout box center as a FLYER_SIZE rect in host coordinates (ignores CSS scale). */
+/** Layout box center as a gem-size rect in host coordinates (ignores CSS transform scale). */
 function hostSlotRect(el, host = flyerHost()) {
+  const size = flyerSize();
   const rect = el.getBoundingClientRect();
   const box = toHostRect(rect, host);
   return {
-    left: box.left + (box.width - FLYER_SIZE) / 2,
-    top: box.top + (box.height - FLYER_SIZE) / 2,
-    width: FLYER_SIZE,
-    height: FLYER_SIZE,
+    left: box.left + (box.width - size) / 2,
+    top: box.top + (box.height - size) / 2,
+    width: size,
+    height: size,
   };
 }
 
 function hostListCenter(list, host = flyerHost()) {
+  const size = flyerSize();
   const box = toHostRect(list.getBoundingClientRect(), host);
   return {
-    left: box.left + box.width / 2 - FLYER_SIZE / 2,
-    top: box.top + Math.max(0, (Math.max(box.height, FLYER_SIZE) - FLYER_SIZE) / 2),
-    width: FLYER_SIZE,
-    height: FLYER_SIZE,
+    left: box.left + box.width / 2 - size / 2,
+    top: box.top + Math.max(0, (Math.max(box.height, size) - size) / 2),
+    width: size,
+    height: size,
   };
 }
 

@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>Exile Roulette</title>
     <style>
       /* Hide until fonts + boot finish — prevents gem/font layout snap. */
@@ -234,7 +234,7 @@
         <div class="settings-modal__panel">
           <header class="settings-modal__head">
             <h2 class="settings-modal__title" id="ascendancy-settings-title">Ascendancy Pool</h2>
-            <button type="button" class="settings-modal__close" id="ascendancy-settings-close" aria-label="Close settings">
+            <button type="button" class="settings-modal__close" id="ascendancy-settings-close" data-close-modal aria-label="Close settings">
               <span aria-hidden="true">&times;</span>
             </button>
           </header>
@@ -248,8 +248,8 @@
                 <span class="settings-modal__stat-label">included</span>
               </p>
               <div class="settings-modal__bar-actions">
-                <button type="button" class="btn btn--small" id="ascendancy-filter-all">Include all</button>
-                <button type="button" class="btn btn--small" id="ascendancy-filter-none">Include none</button>
+                <button type="button" class="btn btn--currency btn--small" id="ascendancy-filter-all">Include all</button>
+                <button type="button" class="btn btn--currency btn--small" id="ascendancy-filter-none">Include none</button>
               </div>
             </div>
 
@@ -257,6 +257,10 @@
               <div class="ascendancy-pool__groups" id="ascendancy-filter-list"></div>
             </div>
           </div>
+
+          <button type="button" class="btn btn--currency settings-modal__dismiss" data-close-modal>
+            Close
+          </button>
         </div>
       </dialog>
 
@@ -264,7 +268,7 @@
         <div class="settings-modal__panel">
           <header class="settings-modal__head">
             <h2 class="settings-modal__title" id="skill-settings-title">Skill pool Settings</h2>
-            <button type="button" class="settings-modal__close" id="skill-settings-close" aria-label="Close settings">
+            <button type="button" class="settings-modal__close" id="skill-settings-close" data-close-modal aria-label="Close settings">
               <span aria-hidden="true">&times;</span>
             </button>
           </header>
@@ -343,8 +347,8 @@
                     <span class="banned__count" id="standard-skills-count">0 included</span>
                   </div>
                   <div class="skill-pool__section-actions">
-                    <button type="button" class="btn btn--small" id="filter-all">Include all</button>
-                    <button type="button" class="btn btn--small" id="filter-none">Include none</button>
+                    <button type="button" class="btn btn--currency btn--small" id="filter-all">Include all</button>
+                    <button type="button" class="btn btn--currency btn--small" id="filter-none">Include none</button>
                   </div>
                 </div>
                 <div class="banned__body" id="standard-skills-body">
@@ -378,8 +382,8 @@
                         <span class="banned__count" id="transfigured-count">0 included</span>
                       </div>
                       <div class="skill-pool__section-actions">
-                        <button type="button" class="btn btn--small" id="transfigured-all">Include all</button>
-                        <button type="button" class="btn btn--small" id="transfigured-none">Include none</button>
+                        <button type="button" class="btn btn--currency btn--small" id="transfigured-all">Include all</button>
+                        <button type="button" class="btn btn--currency btn--small" id="transfigured-none">Include none</button>
                       </div>
                     </div>
                     <div class="banned__body" id="transfigured-skills-body">
@@ -433,8 +437,8 @@
                     <span class="banned__count" id="banned-count">0 included</span>
                   </div>
                   <div class="skill-pool__section-actions">
-                    <button type="button" class="btn btn--small" id="banned-all">Include all</button>
-                    <button type="button" class="btn btn--small" id="banned-none">Include none</button>
+                    <button type="button" class="btn btn--currency btn--small" id="banned-all">Include all</button>
+                    <button type="button" class="btn btn--currency btn--small" id="banned-none">Include none</button>
                   </div>
                 </div>
                 <div class="banned__body" id="painful-skills-body">
@@ -445,6 +449,10 @@
               </section>
             </div>
           </div>
+
+          <button type="button" class="btn btn--currency settings-modal__dismiss" data-close-modal>
+            Close
+          </button>
         </div>
       </dialog>
 

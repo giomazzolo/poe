@@ -5,20 +5,17 @@ export function initSettingsModal() {
   initDialog({
     dialogId: "skill-settings",
     openBtnId: "skill-settings-toggle",
-    closeBtnId: "skill-settings-close",
   });
   initDialog({
     dialogId: "ascendancy-settings",
     openBtnId: "ascendancy-settings-toggle",
-    closeBtnId: "ascendancy-settings-close",
   });
   initInfoTips();
 }
 
-function initDialog({ dialogId, openBtnId, closeBtnId }) {
+function initDialog({ dialogId, openBtnId }) {
   const dialog = document.getElementById(dialogId);
   const openBtn = document.getElementById(openBtnId);
-  const closeBtn = document.getElementById(closeBtnId);
   if (!dialog || !openBtn || typeof dialog.showModal !== "function") return;
 
   const open = () => {
@@ -33,7 +30,9 @@ function initDialog({ dialogId, openBtnId, closeBtnId }) {
   };
 
   openBtn.addEventListener("click", open);
-  closeBtn?.addEventListener("click", close);
+  for (const btn of dialog.querySelectorAll("[data-close-modal]")) {
+    btn.addEventListener("click", close);
+  }
 
   dialog.addEventListener("click", (event) => {
     if (event.target === dialog) close();

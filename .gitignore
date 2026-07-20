@@ -13,6 +13,10 @@
 # Script runtime lock
 /scripts/server.ready
 
+# Large tree extract cache (regenerate via scripts/extract-ascendancy-trees.ps1)
+/scripts/_tree-raw.json
+/roulette/assets/ascendancy-trees/_ascendancy-3.webp
+
 # OS / editor noise
 .DS_Store
 Thumbs.db

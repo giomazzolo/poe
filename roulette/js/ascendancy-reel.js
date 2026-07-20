@@ -17,7 +17,7 @@ const DISAPPEAR_MS = 200;
 /** Native face art is 110×80; reel shows ~19% larger (15% under prior size). */
 const CELL_W = 131;
 const CELL_H = 95;
-const CELL_GAP = 9;
+const CELL_GAP = 0;
 
 let offsetX = 0;
 let cellStep = CELL_W + CELL_GAP;
@@ -59,26 +59,14 @@ function measureCellStep(track) {
   return track.children[1].offsetLeft - track.children[0].offsetLeft;
 }
 
+/** Land 1px inside the winner's left or right edge (50/50). */
 function landOffsetForCell(viewport, cell) {
-  const viewportMid = viewport.clientWidth / 2;
-  const width = cell.offsetWidth;
-  const inset = Math.max(5, width * 0.07);
-  const minX = cell.offsetLeft + inset;
-  const maxX = cell.offsetLeft + width - inset;
-  const span = Math.max(1, maxX - minX);
-  const center = (minX + maxX) / 2;
-  const centerHalf = span * 0.14;
-
-  let pickX;
-  if (Math.random() < 0.25) {
-    pickX = center - centerHalf + Math.random() * (centerHalf * 2);
-  } else if (Math.random() < 0.5) {
-    pickX = minX + Math.random() * Math.max(1, center - centerHalf - minX);
-  } else {
-    pickX = center + centerHalf + Math.random() * Math.max(1, maxX - (center + centerHalf));
-  }
-
-  return viewportMid - pickX;
+  if (!cell) return 0;
+  const pickX =
+    Math.random() < 0.5
+      ? cell.offsetLeft + 1
+      : cell.offsetLeft + cell.offsetWidth - 1;
+  return viewport.clientWidth / 2 - pickX;
 }
 
 function centerOffsetForCell(viewport, cell) {
